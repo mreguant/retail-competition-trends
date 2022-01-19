@@ -1,0 +1,21 @@
+# Run the following lines in the Windows Command Prompt
+
+# assign the path to the folder "repository" to the current directory 
+cd C:\Users\Alejandro\Desktop\repository
+
+# set up julia for the bash code (modify the path where the .exe file is located)
+set PATH=%PATH%;C:\Users\Alejandro\AppData\Local\Programs\Julia-1.6.2\bin
+
+# install required packages 
+julia 0_setup.jl
+
+# data cleaning and transformations
+mkdir build\output
+julia build\code\1_create_market_shares.jl
+julia build\code\2_create_retailing_costs.jl
+julia build\code\3_create_first_stage_dataset.jl
+
+# analysis and output generation
+mkdir analysis\output
+julia analysis\code\4_regressions.jl
+julia analysis\code\5_plots.jl
