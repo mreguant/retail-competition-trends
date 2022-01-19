@@ -52,6 +52,7 @@ The plot figure_1a.png has been successfully created in the analysis/output fold
 
 # Preparing data
 #------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 # Load data
 df=DataFrame(CSV.File(read("build/input/consumer_data.csv", enc"windows-1250")))
 retailers=DataFrame(CSV.File(read("build/input/traditional_retailers_list.csv", enc"windows-1250")))
@@ -100,117 +101,30 @@ df=df[((df.regulated.==true).&(df.market.==df.group)).|(df.regulated.==false),:]
 # Variable of interest
 select!(df,:date,:market,:firm,:group,:tariff,:consumers,:regulated)
 
-# Market weights 
-weights=combine(groupby(df, [:date, :market]), :consumers => sum => :consumers)
 
 
-
-
-# A. TRADITIONAL REGULATED AND TRADITIONAL COMMERCIAL CONSIDERED AS SAME FIRM 
 #------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 df1=copy(df)
 
-# ENDESA's market 
-endesa = df1[df1.market.=="ENDESA",:]
-endesa = combine(groupby(endesa, [:date, :group]), :consumers => sum => :consumers)
-endesa = transform!(groupby(endesa, :date), :consumers => function share(x)  x/sum(x)*100  end  => :share)
-endesa.share2=endesa.share.*endesa.share
-endesa = combine(groupby(endesa, [:date]), :share2 => sum => :share2)
-endesa[:,"market"].= "ENDESA"
+# Traditional regulated and traditional commercial considered as a same firm
+same = combine(groupby(df1, [:date, :market, :group]), :consumers => sum => :consumers)
+same = transform!(groupby(same, [:date,:market]), :consumers => function share(x)  x/sum(x)*100  end  => :share)
+same.share2 = same.share .* same.share
+same = combine(groupby(same, [:date,:market]), :share2 => sum => :share2)
+same = leftjoin(same,weight,on=[:date,:market])
+same = combine(groupby(same,:date), [:share2,:w] => ((s,w)-> (prop=sum(s.*w)/sum(w))) => :same)
 
-# IBERDROLA's market 
-iberdrola = df1[df1.market.=="IBERDROLA",:]
-iberdrola = combine(groupby(iberdrola, [:date, :group]), :consumers => sum => :consumers)
-iberdrola = transform!(groupby(iberdrola, :date), :consumers => function share(x)  x/sum(x)*100  end  => :share)
-iberdrola.share2=iberdrola.share.*iberdrola.share
-iberdrola = combine(groupby(iberdrola, [:date]), :share2 => sum => :share2)
-iberdrola[:,"market"].="IBERDROLA"
-
-# NATURGY's market 
-naturgy = df1[df1.market.=="NATURGY",:]
-naturgy = combine(groupby(naturgy, [:date, :group]), :consumers => sum => :consumers)
-naturgy = transform!(groupby(naturgy, :date), :consumers => function share(x)  x/sum(x)*100  end  => :share)
-naturgy.share2=naturgy.share.*naturgy.share
-naturgy = combine(groupby(naturgy, [:date]), :share2 => sum => :share2)
-naturgy[:,"market"].="NATURGY"
-
-# EDP's market 
-edp = df1[df1.market.=="EDP",:]
-edp = combine(groupby(edp, [:date, :group]), :consumers => sum => :consumers)
-edp = transform!(groupby(edp, :date), :consumers => function share(x)  x/sum(x)*100  end  => :share)
-edp.share2=edp.share.*edp.share
-edp = combine(groupby(edp, [:date]), :share2 => sum => :share2)
-edp[:,"market"].="EDP"
-
-# REPSOL's market 
-repsol = df1[df1.market.=="REPSOL",:]
-repsol = combine(groupby(repsol, [:date, :group]), :consumers => sum => :consumers)
-repsol = transform!(groupby(repsol, :date), :consumers => function share(x)  x/sum(x)*100  end  => :share)
-repsol.share2=repsol.share.*repsol.share
-repsol = combine(groupby(repsol, [:date]), :share2 => sum => :share2)
-repsol[:,"market"].="REPSOL"
-
-# Bind together 
-same = [endesa; iberdrola;naturgy; edp; repsol]
-same = leftjoin(same,weights,on=[:date,:market])
-same = combine(groupby(same,:date), [:share2,:consumers] => ((s,c)-> (HHI=sum(s.*c)/sum(c))) => :same)
-
-
-
-# B. TRADITIONAL REGULATED AND TRADITIONAL COMMERCIAL CONSIDERED AS DIFFERENT FIRMS 
-#------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# Traditional regulated and traditional commercial considered as different firms 
 df1.group=string.(df1.group,"-",df1.regulated)
+dif = combine(groupby(df1, [:date, :market, :group]), :consumers => sum => :consumers)
+dif = transform!(groupby(dif, [:date,:market]), :consumers => function share(x)  x/sum(x)*100  end  => :share)
+dif.share2 = dif.share .* dif.share
+dif =combine(groupby(dif, [:date,:market]), :share2 => sum => :share2)
+dif = leftjoin(dif,weight,on=[:date,:market])
+dif = combine(groupby(dif,:date), [:share2,:w] => ((s,w)-> (prop=sum(s.*w)/sum(w))) => :dif)
 
-# ENDESA's market 
-endesa = df1[df1.market.=="ENDESA",:]
-endesa = combine(groupby(endesa, [:date, :group]), :consumers => sum => :consumers)
-endesa = transform!(groupby(endesa, :date), :consumers => function share(x)  x/sum(x)*100  end  => :share)
-endesa.share2=endesa.share.*endesa.share
-endesa = combine(groupby(endesa, [:date]), :share2 => sum => :share2)
-endesa[:,"market"].= "ENDESA"
-
-# IBERDROLA's market 
-iberdrola = df1[df1.market.=="IBERDROLA",:]
-iberdrola = combine(groupby(iberdrola, [:date, :group]), :consumers => sum => :consumers)
-iberdrola = transform!(groupby(iberdrola, :date), :consumers => function share(x)  x/sum(x)*100  end  => :share)
-iberdrola.share2=iberdrola.share.*iberdrola.share
-iberdrola = combine(groupby(iberdrola, [:date]), :share2 => sum => :share2)
-iberdrola[:,"market"].="IBERDROLA"
-
-# NATURGY's market 
-naturgy = df1[df1.market.=="NATURGY",:]
-naturgy = combine(groupby(naturgy, [:date, :group]), :consumers => sum => :consumers)
-naturgy = transform!(groupby(naturgy, :date), :consumers => function share(x)  x/sum(x)*100  end  => :share)
-naturgy.share2=naturgy.share.*naturgy.share
-naturgy = combine(groupby(naturgy, [:date]), :share2 => sum => :share2)
-naturgy[:,"market"].="NATURGY"
-
-# EDP's market 
-edp = df1[df1.market.=="EDP",:]
-edp = combine(groupby(edp, [:date, :group]), :consumers => sum => :consumers)
-edp = transform!(groupby(edp, :date), :consumers => function share(x)  x/sum(x)*100  end  => :share)
-edp.share2=edp.share.*edp.share
-edp = combine(groupby(edp, [:date]), :share2 => sum => :share2)
-edp[:,"market"].="EDP"
-
-# REPSOL's market 
-repsol = df1[df1.market.=="REPSOL",:]
-repsol = combine(groupby(repsol, [:date, :group]), :consumers => sum => :consumers)
-repsol = transform!(groupby(repsol, :date), :consumers => function share(x)  x/sum(x)*100  end  => :share)
-repsol.share2=repsol.share.*repsol.share
-repsol = combine(groupby(repsol, [:date]), :share2 => sum => :share2)
-repsol[:,"market"].="REPSOL"
-
-# Bind together 
-different = [endesa; iberdrola;naturgy; edp; repsol]
-different = leftjoin(different,weights,on=[:date,:market])
-different = combine(groupby(different,:date), [:share2,:consumers] => ((s,c)-> (HHI=sum(s.*c)/sum(c))) => :dif)
-
-
-
-# PLOT
-#------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-df1=leftjoin(same,different,on=:date)
+# Merge
+df1=leftjoin(same,dif,on=:date)
 
 # Date
 df1.date=replace.(df1.date, "T1" => "03")
@@ -229,7 +143,7 @@ p2=plot(
     xticks = ([Date(2011,1,1),Date(2013,01,01),Date(2015,01,01),Date(2017,01,01),Date(2019,01,01)],["2011","2013","2015","2017","2019"])
 )
 plot!(
-    df1.date, df1.dif,legend=:bottomright, linestyle=:dash,linecolor = :black, ylims=(0,10000), label="as different firm",
+    df1.date, df1.dif,legend=:bottomright, linestyle=:dash,linecolor = :black, ylims=(0,10000), label="as different firms",
     size=(600,400),
     grid = true, gridalpha = .2,
     legendfontsize = 9, ytickfontsize = 9,xtickfontsize = 9,
@@ -248,64 +162,37 @@ The plot figure_1b.png has been successfully created in the analysis/output fold
 # Figure 2a: Share of consumers on time-of-use
 #----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-# Preparing data set 
-#----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 df2=copy(df)
+
+# Aggregate all new entrants together 
+trad_names=["ENDESA","IBERDROLA","NATURGY","EDP","REPSOL"]
+df2.group[.!in(trad_names).(df2.group), :].="OTHERS"
 
 # Create categorical variable for time of use 
 df2.tou=ifelse.(contains.(df2.tariff,"DHA"),"tou","no-tou")
 
-# Traditional
-trad_names=["ENDESA","IBERDROLA","NATURGY","EDP","REPSOL"]
-trad=df2[in(trad_names).(df2.group), :]
+# Create incumbent variable 
+df2.incumbent=ifelse.(df.market.==df.group,1,0)
 
-# Traditional regulated
-reg = trad[trad.regulated.==true,:]
-reg = combine(groupby(reg, [:date,:market,:group,:tou]), :consumers => sum => :consumers)
-reg = transform!(groupby(reg, [:date,:market,:group]),:consumers => sum => :total_group)
-reg.prop = reg.consumers./reg.total_group
-reg = reg[reg.tou.=="tou",:]
-reg = combine(groupby(reg,:date), [:prop,:total_group] => ((p,t)-> (prop=sum(p.*t)/sum(t))) => :prop)
-reg[!,"type"].= "Trad - reg"
+# Create label 
+df2.type = ifelse.( 
+    (df2.incumbent .== 1) .& (df2.regulated .== 0), "Trad-com-inc", ifelse.( 
+        (df2.incumbent .== 1) .& (df2.regulated .== 1) ,"Trad-reg", ifelse.( 
+            (df2.group .!= "OTHERS"), "Trad-com", "New entrants"
+            )
+    )
+)
 
-# Traditional in incumbent market 
-inc = trad[(trad.regulated.==false).&(trad.market.==trad.group),:]
-inc = combine(groupby(inc, [:date,:market,:group,:tou]), :consumers => sum => :consumers)
-inc = transform!(groupby(inc, [:date,:market,:group]),:consumers => sum => :total_group)
-inc.prop = inc.consumers./inc.total_group
-inc = inc[inc.tou.=="tou",:]
-inc = combine(groupby(inc,:date), [:prop,:total_group] => ((p,t)-> (prop=sum(p.*t)/sum(t))) => :prop)
-inc[!,"type"].= "Trad - com - inc"
+# Weight of each market by type 
+weight = combine(groupby(df2, [:date,:market, :type]), :consumers => sum => :w)
 
-# Traditional not in incumbent market 
-ninc = trad[(trad.regulated.==false).&(trad.market.!=trad.group),:]
-weight = combine(groupby(ninc, [:date,:market]), :consumers => sum => :consumers) # market weight 
-ninc = combine(groupby(ninc, [:date,:market,:group,:tou]), :consumers => sum => :consumers)
-ninc = transform!(groupby(ninc, [:date,:market,:group]),:consumers => sum => :total_group)
-ninc.prop = ninc.consumers./ninc.total_group
-ninc = ninc[ninc.tou.=="tou",:]
-ninc = combine(groupby(ninc,[:date,:market]), [:prop,:total_group] => ((p,t)-> (prop=sum(p.*t)/sum(t))) => :prop) # weighting first by group in each market
-ninc = leftjoin(ninc,weight,on=[:date,:market])
-ninc = combine(groupby(ninc,:date), [:prop,:consumers] => ((p,c)-> (prop=sum(p.*c)/sum(c))) => :prop) # finally weighting by market
-ninc[!,"type"].= "Trad - com"
+# Calculate share of consumers in time-of-use in each market 
+df2 = combine(groupby(df2, [:date,:market, :type, :tou]), :consumers => sum => :consumers)
+transform!(groupby(df2, [:date,:market,:type]), :consumers => function share(x) x / sum(x) end => :prop)
+df2 = filter(row -> ( row.tou =="tou")  , df2)
+df2 = leftjoin(df2,weight,on=[:date,:market,:type])
+df2 = combine(groupby(df2,[:date,:type]), [:prop,:w] => ((p,w)-> (prop=sum(p.*w)/sum(w))) => :prop)
 
-# New entrants
-entrant=df2[.!in(trad_names).(df2.group), :]
-weight = combine(groupby(entrant, [:date,:market]), :consumers => sum => :consumers) # market weight 
-entrant = combine(groupby(entrant, [:date,:market,:group,:tou]), :consumers => sum => :consumers)
-entrant = transform!(groupby(entrant, [:date,:market,:group]),:consumers => sum => :total_group)
-entrant.prop = entrant.consumers./entrant.total_group
-entrant = entrant[entrant.tou.=="tou",:]
-entrant = combine(groupby(entrant,[:date,:market]), [:prop,:total_group] => ((p,t)-> (prop=sum(p.*t)/sum(t))) => :prop) # weighting first by group in each market
-entrant = leftjoin(entrant,weight,on=[:date,:market])
-entrant = combine(groupby(entrant,:date), [:prop,:consumers] => ((p,c)-> (prop=sum(p.*c)/sum(c))) => :prop) # finally weighting by market
-entrant[!,"type"].= "New entrants"
-
-
-
-# PLOT
-#----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-df2=[reg;inc;ninc;entrant]
 
 # Date
 df2.date=replace.(df2.date, "T1" => "03")
