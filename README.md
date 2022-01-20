@@ -3,7 +3,7 @@ Authors: Jacint Enrich, Ruoyi Li, Alejandro Mizrahi, and Mar Reguant
 
 Description
 --------
-This repository replicates the results for the paper "Smart Meters and Retail Competition: Trends and Challenges". The code is mostly written in Julia, but there is one file in R. The main file "main" runs all of the code to generate the data for the 3 figures and 2 tables in the paper. 
+This repository replicates the results for the paper "Smart Meters and Retail Competition: Trends and Challenges". The code is written in Julia. The main file "main" runs all of the code to generate the data for the 3 figures and 2 tables in the paper. 
 
 Data Availability and Provenance Statements
 ----------------------------
@@ -41,7 +41,7 @@ Datafiles: `monthly_prices.csv`, `natural_gas_prices.dta`, `hourly_retailing_cos
 
 
 ### Smart meter data
-> Data on smart meter's adoption were digitalised from CNMC's Equipment Integrated in the Remote Management System (https://www.cnmc.es/expedientes?t=TELEGESTI%C3%93N&idambito=All&edit-submit-buscador-expedientes=Buscar&idtipoexp=All&hidprocedim=All). Data are availble from July 2015 to December 2019.  
+> Data on smart meter's adoption were digitalised from CNMC's Equipment Integrated in the Remote Management System (https://www.cnmc.es/expedientes?t=TELEGESTION&idambito=All&edit-submit-buscador-expedientes=Buscar&idtipoexp=All&hidprocedim=All). Data are availble from July 2015 to December 2019.  
 
 Datafile: `smart_meter.csv`
 
@@ -77,9 +77,6 @@ Computational requirements
   - `CategoricalArrays` v0.9.7
   - `RegressionTables` v0.5.3
   - the program "`0_setup.jl`" will install all dependencies, and should be run once.
-- R 3.4.3
-  - `dplyr` (0.8.3)
-  - the file "`0_setup.R`" will install all dependencies, and should be run once prior to running other programs.
 
 The main file to run the whole repository uses the Windows Command Prompt, which may require Windows 10 or higher.
 
@@ -93,7 +90,7 @@ The main file to run the whole repository uses the Windows Command Prompt, which
 
 Approximate time needed to reproduce the analyses on a standard (CURRENT YEAR) desktop machine:
 
-- [ ] <10 minutes
+- [x] <10 minutes
 - [ ] 10-60 minutes
 - [ ] 1-8 hours
 - [ ] 8-24 hours
@@ -136,8 +133,8 @@ The provided code reproduces:
 
 | Figure/Table #    | Program                         | Line Number | Output file                      |
 |-------------------|---------------------------------|-------------|----------------------------------|
-| Table 1           | analysis/code/4_regressions.jl  |    96       | table_1.tex                      |
-| Table 2b          | analysis/code/4_regressions.jl  |    273      | figure_2b.tex                    |
-| Figure 1a         | analysis/code/5_plots.jl        |    42       | figure_1a.png                    |  
-| Figure 1b         | analysis/code/5_plots.jl        |    155      | figure_1b.png                    |
+| Table 1           | analysis/code/4_regressions.jl  | 96          | table_1.tex                      |
+| Table 2b          | analysis/code/4_regressions.jl  | 273         | figure_2b.tex                    |
+| Figure 1a         | analysis/code/5_plots.jl        | 42          | figure_1a.png                    |  
+| Figure 1b         | analysis/code/5_plots.jl        | 155         | figure_1b.png                    |
 | Figure 2a         | analysis/code/5_plots.jl        |             | figure_2a.png                    | 
