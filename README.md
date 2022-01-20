@@ -1,5 +1,5 @@
 # Code and data repository for "Smart Meters and Retail Competition: Trends and Challenges"
-Authors: Jacint Enrich, Ruoyi Li, Alex Mizrahi, and Mar Reguant
+Authors: Jacint Enrich, Ruoyi Li, Alejandro Mizrahi, and Mar Reguant
 
 Description
 --------
@@ -25,23 +25,23 @@ Data Availability and Provenance Statements
 ### Details on each Data Source
 
 ### Market share data
-> Data on market share were downloaded from CNMC's 2019 Electricity Retail Market Monitoring Report https://www.cnmc.es/expedientes/isde02720. Data are available from Q1 2011 to Q4 2019. 
+> Data on market share were downloaded from CNMC's 2019 Electricity Retail Market Monitoring Report (https://www.cnmc.es/expedientes/isde02720). Data are available from Q1 2011 to Q4 2019. 
 
-Datafile: `consumer_data.csv`, `traditional_retailers_list.csv`
+Datafiles: `consumer_data.csv`, `traditional_retailers_list.csv`
 
 ### Flow data 
-> Data on consumers' flow were digitalised from CNMC’s Quarterly Monitoring Reports on Changes of Retailer https://www.cnmc.es/expedientes?t=IS+SOBRE+CAMBIOS+DE+COMERCIALIZADOR&idambito=All&edit-submit-buscador-expedientes=Buscar&idtipoexp=All&hidprocedim=All. Data are available from Q1 2016 to Q3 2020. 
+> Data on consumers' flow were digitalised from CNMC’s Quarterly Monitoring Reports on Changes of Retailer (https://www.cnmc.es/expedientes?t=IS+SOBRE+CAMBIOS+DE+COMERCIALIZADOR&idambito=All&edit-submit-buscador-expedientes=Buscar&idtipoexp=All&hidprocedim=All). Data are available from Q1 2016 to Q3 2020. 
 
 Datafile: `flow_data.csv`
 
 ### Price data 
-> Historical data on retail electricity prices were provide by CNMC upon request. A rearranged version of these data are provided as part of this archive. These data are available on a daily basis on https://comparador.cnmc.gob.es/. Data are available from December 2011 to May 2021. In addition, data on gas prices are obtained from MIBGAS and Bloomberg.   
+> Historical data on retail electricity prices were provide by CNMC upon request. A rearranged version of these data are provided as part of this archive. These data are available on a daily basis on the CNCMC's price comparison website (https://comparador.cnmc.gob.es/). Data are available from December 2011 to May 2021. In addition, data on gas prices are from MIBGAS and Bloomberg, and data on retailing costs, from Red Eléctrica de España (REE).  
 
-Datafile: `monthly_prices.csv`, `natural_gas_prices.dta`
+Datafiles: `monthly_prices.csv`, `natural_gas_prices.dta`, `hourly_retailing_costs.dta`.
 
 
 ### Smart meter data
-> Data on smart meter's adoption were digitalised from CNMC's Equipment Integrated in the Remote Management System https://www.cnmc.es/expedientes?t=TELEGESTI%C3%93N&idambito=All&edit-submit-buscador-expedientes=Buscar&idtipoexp=All&hidprocedim=All. Data are availble from July 2015 to December 2019.  
+> Data on smart meter's adoption were digitalised from CNMC's Equipment Integrated in the Remote Management System (https://www.cnmc.es/expedientes?t=TELEGESTI%C3%93N&idambito=All&edit-submit-buscador-expedientes=Buscar&idtipoexp=All&hidprocedim=All). Data are availble from July 2015 to December 2019.  
 
 Datafile: `smart_meter.csv`
 
@@ -49,63 +49,45 @@ Datafile: `smart_meter.csv`
 Dataset list
 ------------
 
-> INSTRUCTIONS: In some cases, authors will provide one dataset (file) per data source, and the code to combine them. In others, in particular when data access might be restrictive, the replication package may only include derived/analysis data. Every file should be described. This can be provided as a Excel/CSV table, or in the table below.
-
-> INSTRUCTIONS: While it is often most convenient to provide data in the native format of the software used to analyze and process the data, not all formats are "open" and can be read by other (free) software. Data should at a minimum be provided in formats that can be read by open-source software (R, Python, others), and ideally be provided in non-proprietary, archival-friendly formats. 
-
-> INSTRUCTIONS: All data files should be fully documented: variables/columns should have labels (long-form meaningful names), and values should be explained. This might mean generating a codebook, pointing at a public codebook, or providing data in (non-proprietary) formats that allow for a rich description. This is in particular important for data that is not distributable.
-
-> INSTRUCTIONS: Some journals require, and it is considered good practice, to provide synthetic or simulated data that has some of the key characteristics of the restricted-access data which are not provided. The level of fidelity may vary - it may be useful for debugging only, or it should allow to assess the key characteristics of the statistical/econometric procedure or the main conclusions of the paper.
-
 | Data file | Source | Notes    |Provided |
 |-----------|--------|----------|---------|
 | `build/input/consumer_data.csv` | CNMC | Quarterly market share data at the market level | Yes |
 | `build/input/traditional_retailers_list.csv` | Own elaboration | Used to relate each retailer to its corresponding group | Yes |
 | `analysis/input/flow_data.csv` | CNMC | Quarterly registrations, dropouts and switchings of consumers | Yes |
 | `build/input/monthly_prices.csv`| CNMC | Monthly retail electricity pricces | Yes |
-| `build/input/natural_gas-prices.csv`| MIBGAS and Bloomberg | Hourly wholesale gas pricces | Yes |
+| `build/input/natural_gas-prices.dta`| MIBGAS and Bloomberg | Hourly wholesale gas pricces | Yes |
+| `build/input/hourly_retailing_costs.dta`| REE | Hourly retailing costs | Yes |
 | `build/input/smart_meter.csv`| CNMC | Quarterly share of supply points with smart meters | Yes |
 
 
 Computational requirements
 ---------------------------
 
-> INSTRUCTIONS: In general, the specific computer code used to generate the results in the article will be within the repository that also contains this README. However, other computational requirements - shared libraries or code packages, required software, specific computing hardware - may be important, and is always useful, for the goal of replication. Some example text follows. 
-
-> INSTRUCTIONS: We strongly suggest providing setup scripts that install/set up the environment. Sample scripts for [Stata](https://github.com/gslab-econ/template/blob/master/config/config_stata.do),  [R](https://github.com/labordynamicsinstitute/paper-template/blob/master/programs/global-libraries.R), [Julia](https://github.com/labordynamicsinstitute/paper-template/blob/master/programs/packages.jl) are easy to set up and implement. Specific software may have more sophisticated tools: [Python](https://pip.pypa.io/en/stable/user_guide/#ensuring-repeatability), [Julia](https://julia.quantecon.org/more_julia/tools_editors.html#Package-Environments).
-
 ### Software Requirements
 
-> INSTRUCTIONS: List all of the software requirements, up to and including any operating system requirements, for the entire set of code. It is suggested to distribute most dependencies together with the replication package if allowed, in particular if sourced from unversioned code repositories, Github repos, and personal webpages. In all cases, list the version *you* used. 
-
-- Stata (code was last run with version 15)
-  - `estout` (as of 2018-05-12)
-  - `rdrobust` (as of 2019-01-05)
-  - the program "`0_setup.do`" will install all dependencies locally, and should be run once.
-- Python 3.6.4
-  - `pandas` 0.24.2
-  - `numpy` 1.16.4
-  - the file "`requirements.txt`" lists these dependencies, please run "`pip install -r requirements.txt`" as the first step. See [https://pip.pypa.io/en/stable/user_guide/#ensuring-repeatability](https://pip.pypa.io/en/stable/user_guide/#ensuring-repeatability) for further instructions on creating and using the "`requirements.txt`" file.
-- Intel Fortran Compiler version 20200104
-- Matlab (code was run with Matlab Release 2018a)
+- Julia (code was last run with version 1.6.2)
+  - `CSV` v0.9.11
+  - `DataFrames` v0.22.7
+  - `StringEncodings` v0.3.5
+  - `TimeZones` v1.7.1
+  - `StatFiles` v0.8.0
+  - `ShiftedArrays` v1.0.0
+  - `Plots` v1.23.6
+  - `FixedEffectModels` v1.6.3
+  - `CategoricalArrays` v0.9.7
+  - `RegressionTables` v0.5.3
+  - the program "`0_setup.jl`" will install all dependencies, and should be run once.
 - R 3.4.3
-  - `tidyr` (0.8.3)
-  - `rdrobust` (0.99.4)
-  - the file "`0_setup.R`" will install all dependencies (latest version), and should be run once prior to running other programs.
+  - `dplyr` (0.8.3)
+  - the file "`0_setup.R`" will install all dependencies, and should be run once prior to running other programs.
 
-Portions of the code use bash scripting, which may require Linux.
-
-Portions of the code use Powershell scripting, which may require Windows 10 or higher.
+The main file to run the whole repository uses the Windows Command Prompt, which may require Windows 10 or higher.
 
 ### Controlled Randomness
-
-> INSTRUCTIONS: Some estimation code uses random numbers, almost always provided by pseudorandom number generators (PRNGs). For reproducibility purposes, these should be provided with a deterministic seed, so that the sequence of numbers provided is the same for the original author and any replicators. While this is not always possible, it is a requirement by many journals' policies. The seed should be set once, and not use a time-stamp. If using parallel processing, special care needs to be taken. If using multiple programs in sequence, care must be taken on how to call these programs, ideally from a main program, so that the sequence is not altered.
 
 - [ ] Random seed is set at line _____ of program ______
 
 ### Memory and Runtime Requirements
-
-> INSTRUCTIONS: Memory and compute-time requirements may also be relevant or even critical. Some example text follows. It may be useful to break this out by Table/Figure/section of processing. For instance, some estimation routines might run for weeks, but data prep and creating figures might only take a few minutes.
 
 #### Summary
 
@@ -122,104 +104,40 @@ Approximate time needed to reproduce the analyses on a standard (CURRENT YEAR) d
 
 #### Details
 
-The code was last run on a **4-core Intel-based laptop with MacOS version 10.14.4**. 
-
-Portions of the code were last run on a **32-core Intel server with 1024 GB of RAM, 12 TB of fast local storage**. Computation took 734 hours. 
-
-Portions of the code were last run on a **12-node AWS R3 cluster, consuming 20,000 core-hours**.  
-
-> INSTRUCTIONS: Identifiying hardware and OS can be obtained through a variety of ways:
-> Some of these details can be found as follows:
->
-> - (Windows) by right-clicking on "This PC" in File Explorer and choosing "Properties"
-> - (Mac) Apple-menu > "About this Mac"
-> - (Linux) see code in [tools/linux-system-info.sh](https://github.com/AEADataEditor/replication-template/blob/master/tools/linux-system-info.sh)`
+The code was last run on a **11th Gen Intel(R) Core(TM) i5-1135G with Windows 10 Pro**. 
 
 
 Description of programs/code
 ----------------------------
 
-> INSTRUCTIONS: Give a high-level overview of the program files and their purpose. Remove redundant/ obsolete files from the Replication archive.
-
-- Programs in `programs/01_dataprep` will extract and reformat all datasets referenced above. The file `programs/01_dataprep/main.do` will run them all.
-- Programs in `programs/02_analysis` generate all tables and figures in the main body of the article. The program `programs/02_analysis/main.do` will run them all. Each program called from `main.do` identifies the table or figure it creates (e.g., `05_table5.do`).  Output files are called appropriate names (`table5.tex`, `figure12.png`) and should be easy to correlate with the manuscript.
-- Programs in `programs/03_appendix` will generate all tables and figures  in the online appendix. The program `programs/03_appendix/main-appendix.do` will run them all. 
-- Ado files have been stored in `programs/ado` and the `main.do` files set the ADO directories appropriately. 
-- The program `programs/00_setup.do` will populate the `programs/ado` directory with updated ado packages, but for purposes of exact reproduction, this is not needed. The file `programs/00_setup.log` identifies the versions as they were last updated.
-- The program `programs/config.do` contains parameters used by all programs, including a random seed. Note that the random seed is set once for each of the two sequences (in `02_analysis` and `03_appendix`). If running in any order other than the one outlined below, your results may differ.
-
-### (Optional, but recommended) License for Code
-
-> INSTRUCTIONS: Most journal repositories provide for a default license, but do not impose a specific license. Authors should actively select a license. This should be provided in a LICENSE.txt file, separately from the README, possibly combined with the license for any data provided. Some code may be subject to inherited license requirements, i.e., the original code author may allow for redistribution only if the code is licensed under specific rules - authors should check with their sources. For instance, some code authors require that their article describing the econometrics of the package be cited. Licensing can be complex. Some non-legal guidance may be found [here](https://social-science-data-editors.github.io/guidance/Licensing_guidance.html).
-
-The code is licensed under a MIT/BSD/GPL [choose one!] license. See [LICENSE.txt](LICENSE.txt) for details.
+- The program `0_setup.jl` will install all required dependencies in Julia.
+- The program `build/code/1_create_market_shares.jl` will compute the market shares based on the number of supply points in each market and tariff.
+- The program `build/code/2_create_retailing_costs.jl` will compute the retailing costs for each quarter.
+- The program `build/code/3_create_first_stage_dataset.jl` will combine market shares with retail electricity prices, gas prices, retailing costs and smart meter data.
+- The program `analysis/code/4_regressions.jl` will compute the regressions in table 1 and 2b. 
+- The program `analysis/code/5_plots.jl` will generate the figures 1a, 1b and 2a.
 
 Instructions to Replicators
 ---------------------------
 
-> INSTRUCTIONS: The first two sections ensure that the data and software necessary to conduct the replication have been collected. This section then describes a human-readable instruction to conduct the replication. This may be simple, or may involve many complicated steps. It should be a simple list, no excess prose. Strict linear sequence. If more than 4-5 manual steps, please wrap a main program/Makefile around them, in logical sequences. Examples follow.
-
-- Edit `programs/config.do` to adjust the default path
-- Run `programs/00_setup.do` once on a new system to set up the working environment. 
-- Download the data files referenced above. Each should be stored in the prepared subdirectories of `data/`, in the format that you download them in. Do not unzip. Scripts are provided in each directory to download the public-use files. Confidential data files requested as part of your FSRDC project will appear in the `/data` folder. No further action is needed on the replicator's part.
-- Run `programs/01_main.do` to run all steps in sequence.
-
-### Details
-
-- `programs/00_setup.do`: will create all output directories, install needed ado packages. 
-   - If wishing to update the ado packages used by this archive, change the parameter `update_ado` to `yes`. However, this is not needed to successfully reproduce the manuscript tables. 
-- `programs/01_dataprep`:  
-   - These programs were last run at various times in 2018. 
-   - Order does not matter, all programs can be run in parallel, if needed. 
-   - A `programs/01_dataprep/main.do` will run them all in sequence, which should take about 2 hours.
-- `programs/02_analysis/main.do`.
-   - If running programs individually, note that ORDER IS IMPORTANT. 
-   - The programs were last run top to bottom on July 4, 2019.
-- `programs/03_appendix/main-appendix.do`. The programs were last run top to bottom on July 4, 2019.
-- Figure 1: The figure can be reproduced using the data provided in the folder “2_data/data_map”, and ArcGIS Desktop (Version 10.7.1) by following these (manual) instructions:
-  - Create a new map document in ArcGIS ArcMap, browse to the folder
-“2_data/data_map” in the “Catalog”, with files  "provinceborders.shp", "lakes.shp", and "cities.shp". 
-  - Drop the files listed above onto the new map, creating three separate layers. Order them with "lakes" in the top layer and "cities" in the bottom layer.
-  - Right-click on the cities file, in properties choose the variable "health"... (more details)
+- Run `0_setup.jl` once to install the required packages. 
+- Edit `main.txt` to adjust the default path where the current repository is located and add Julia to the PATH environment variable.
+- Run `main.txt` to run all steps in sequence.
 
 List of tables and programs
 ---------------------------
 
-> INSTRUCTIONS: Your programs should clearly identify the tables and figures as they appear in the manuscript, by number. Sometimes, this may be obvious, e.g. a program called "`table1.do`" generates a file called `table1.png`. Sometimes, mnemonics are used, and a mapping is necessary. In all circumstances, provide a list of tables and figures, identifying the program (and possibly the line number) where a figure is created.
->
-> NOTE: If the public repository is incomplete, because not all data can be provided, as described in the data section, then the list of tables should clearly indicate which tables, figures, and in-text numbers can be reproduced with the public material provided.
-
 The provided code reproduces:
 
 - [ ] All numbers provided in text in the paper
-- [ ] All tables and figures in the paper
+- [X] All tables and figures in the paper
 - [ ] Selected tables and figures in the paper, as explained and justified below.
 
 
-| Figure/Table #    | Program                  | Line Number | Output file                      | Note                            |
-|-------------------|--------------------------|-------------|----------------------------------|---------------------------------|
-| Table 1           | 02_analysis/table1.do    |             | summarystats.csv                 ||
-| Table 2           | 02_analysis/table2and3.do| 15          | table2.csv                       ||
-| Table 3           | 02_analysis/table2and3.do| 145         | table3.csv                       ||
-| Figure 1          | n.a. (no data)           |             |                                  | Source: Herodus (2011)          |
-| Figure 2          | 02_analysis/fig2.do      |             | figure2.png                      ||
-| Figure 3          | 02_analysis/fig3.do      |             | figure-robustness.png            | Requires confidential data      |
-
-## References
-
-> INSTRUCTIONS: As in any scientific manuscript, you should have proper references. For instance, in this sample README, we cited "Ruggles et al, 2019" and "DESE, 2019" in a Data Availability Statement. The reference should thus be listed here, in the style of your journal:
-
-Steven Ruggles, Steven M. Manson, Tracy A. Kugler, David A. Haynes II, David C. Van Riper, and Maryia Bakhtsiyarava. 2018. "IPUMS Terra: Integrated Data on Population and Environment: Version 2 [dataset]." Minneapolis, MN: *Minnesota Population Center, IPUMS*. https://doi.org/10.18128/D090.V2
-
-Department of Elementary and Secondary Education (DESE), 2019. "Student outcomes database [dataset]" *Massachusetts Department of Elementary and Secondary Education (DESE)*. Accessed January 15, 2019.
-
-U.S. Bureau of Economic Analysis (BEA). 2016. “Table 30: "Economic Profile by County, 1969-2016.” (accessed Sept 1, 2017).
-
-Inglehart, R., C. Haerpfer, A. Moreno, C. Welzel, K. Kizilova, J. Diez-Medrano, M. Lagos, P. Norris, E. Ponarin & B. Puranen et al. (eds.). 2014. World Values Survey: Round Six - Country-Pooled Datafile Version: http://www.worldvaluessurvey.org/WVSDocumentationWV6.jsp. Madrid: JD Systems Institute.
-
----
-
-## Acknowledgements
-
-Some content on this page was copied from [Hindawi](https://www.hindawi.com/research.data/#statement.templates). Other content was adapted  from [Fort (2016)](https://doi.org/10.1093/restud/rdw057), Supplementary data, with the author's permission.
-
+| Figure/Table #    | Program                         | Line Number | Output file                      |
+|-------------------|---------------------------------|-------------|----------------------------------|
+| Table 1           | analysis/code/4_regressions.jl  |    96       | table_1.tex                      |
+| Table 2b          | analysis/code/4_regressions.jl  |    273      | figure_2b.tex                    |
+| Figure 1a         | analysis/code/5_plots.jl        |    42       | figure_1a.png                    |  
+| Figure 1b         | analysis/code/5_plots.jl        |    155      | figure_1b.png                    |
+| Figure 2a         | analysis/code/5_plots.jl        |             | figure_2a.png                    | 

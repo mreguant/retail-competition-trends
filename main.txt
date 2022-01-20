@@ -3,7 +3,7 @@
 # assign the path to the folder "repository" to the current directory 
 cd C:\Users\Alejandro\Desktop\repository
 
-# set up julia for the bash code (modify the path where the .exe file is located)
+# modify the path where the Julia setup file (.exe) is located
 set PATH=%PATH%;C:\Users\Alejandro\AppData\Local\Programs\Julia-1.6.2\bin
 
 # install required packages 
