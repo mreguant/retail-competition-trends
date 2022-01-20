@@ -41,7 +41,7 @@ Datafiles: `monthly_prices.csv`, `natural_gas_prices.dta`, `hourly_retailing_cos
 
 
 ### Smart meter data
-> Data on smart meter's adoption were digitalised from CNMC's Equipment Integrated in the Remote Management System (https://www.cnmc.es/expedientes?t=TELEGESTION&idambito=All&edit-submit-buscador-expedientes=Buscar&idtipoexp=All&hidprocedim=All). Data are availble from July 2015 to December 2019.  
+> Data on smart meter's adoption were digitalised from CNMC's Equipment Integrated in the Remote Management System Reports (https://www.cnmc.es/expedientes?t=TELEGESTION&idambito=All&edit-submit-buscador-expedientes=Buscar&idtipoexp=All&hidprocedim=All). Data are available from July 2015 to December 2019.  
 
 Datafile: `smart_meter.csv`
 
