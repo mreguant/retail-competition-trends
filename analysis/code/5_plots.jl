@@ -106,6 +106,9 @@ select!(df,:date,:market,:firm,:group,:tariff,:consumers,:regulated)
 #------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 df1=copy(df)
 
+# Market weights 
+weight =  combine(groupby(df1, [:date, :market]), :consumers => sum => :w)
+
 # Traditional regulated and traditional commercial considered as a same firm
 same = combine(groupby(df1, [:date, :market, :group]), :consumers => sum => :consumers)
 same = transform!(groupby(same, [:date,:market]), :consumers => function share(x)  x/sum(x)*100  end  => :share)

@@ -18,56 +18,33 @@ Data Availability and Provenance Statements
 
 ### Summary of Availability
 
-- [ ] All data **are** publicly available.
-- [x] Some data **cannot be made** publicly available.
+- [x] All data **are** publicly available.
+- [ ] Some data **cannot be made** publicly available.
 - [ ] **No data can be made** publicly available.
 
 ### Details on each Data Source
 
-### Example for public use data collected by the authors
+### Market share data
+> Data on market share were downloaded from CNMC's 2019 Electricity Retail Market Monitoring Report https://www.cnmc.es/expedientes/isde02720. Data are available from Q1 2011 to Q4 2019. 
 
-> The [DATA TYPE] data used to support the findings of this study have been deposited in the [NAME] repository ([DOI or OTHER PERSISTENT IDENTIFIER]). [[1](https://www.hindawi.com/research.data/#statement.templates)]. The data were collected by the authors, and are available under a Creative Commons Non-commercial license.
+Datafile: `consumer_data.csv`, `traditional_retailers_list.csv`
 
-### Example for public use data sourced from elsewhere and provided
+### Flow data 
+> Data on consumers' flow were digitalised from CNMC’s Quarterly Monitoring Reports on Changes of Retailer https://www.cnmc.es/expedientes?t=IS+SOBRE+CAMBIOS+DE+COMERCIALIZADOR&idambito=All&edit-submit-buscador-expedientes=Buscar&idtipoexp=All&hidprocedim=All. Data are available from Q1 2016 to Q3 2020. 
 
-> Data on National Income and Product Accounts (NIPA) were downloaded from the U.S. Bureau of Economic Analysis (BEA, 2016). We use Table 30. Data can be downloaded from https://apps.bea.gov/regional/downloadzip.cfm, under "Personal Income (State and Local)", select CAINC30: Economic Profile by County, then download. Data can also be directly downloaded using  https://apps.bea.gov/regional/zip/CAINC30.zip. A copy of the data is provided as part of this archive. The data are in the public domain.
+Datafile: `flow_data.csv`
 
-Datafile:  `CAINC30__ALL_AREAS_1969_2018.csv`
+### Price data 
+> Historical data on retail electricity prices were provide by CNMC upon request. A rearranged version of these data are provided as part of this archive. These data are available on a daily basis on https://comparador.cnmc.gob.es/. Data are available from December 2011 to May 2021. In addition, data on gas prices are obtained from MIBGAS and Bloomberg.   
 
-### Example for public use data with required registration and provided extract
+Datafile: `monthly_prices.csv`, `natural_gas_prices.dta`
 
-> The paper uses IPUMS Terra data (Ruggles et al, 2018). IPUMS-Terra does not allow for redistribution, except for the purpose of replication archives. Permissions as per https://terra.ipums.org/citation have been obtained, and are documented within the "data/IPUMS-terra" folder.
->> Note: the reference to "Ruggles et al, 2018" would be resolved in the Reference section of this README, **and** in the main manuscript.
 
-Datafile: `data/raw/ipums_terra_2018.dta`
+### Smart meter data
+> Data on smart meter's adoption were digitalised from CNMC's Equipment Integrated in the Remote Management System https://www.cnmc.es/expedientes?t=TELEGESTI%C3%93N&idambito=All&edit-submit-buscador-expedientes=Buscar&idtipoexp=All&hidprocedim=All. Data are availble from July 2015 to December 2019.  
 
-### Example for free use data with required registration, extract not provided
+Datafile: `smart_meter.csv`
 
-> The paper uses data from the World Values Survey Wave 6 (Inglehart et al, 2019). Data is subject to a redistribution restriction, but can be freely downloaded from http://www.worldvaluessurvey.org/WVSDocumentationWV6.jsp. Choose `WV6_Data_Stata_v20180912`, fill out the registration form, including a brief description of the project, and agree to the conditions of use. Note: "the data files themselves are not redistributed" and other conditions. Save the file in the directory `data/raw`. 
-
->> Note: the reference to "Inglehart et al, 2018" would be resolved in the Reference section of this README, **and** in the main manuscript.
-
-Datafile: `data/raw/WV6_Data_Stata_v20180912.dta` (not provided)
-
-### Example for confidential data
-
-> INSTRUCTIONS: Citing and describing confidential data, in particular when it does not have a regular distribution channel or online landing page, can be tricky. A citation can be crafted ([see guidance](https://social-science-data-editors.github.io/guidance/FAQ.html#data-citation-without-online-link)), and the DAS should describe how to access, whom to contact (including the role of the particular person, should that person retire), and other relevant information, such as required citizenship status or cost.
-
-> The data for this project (DESE, 2019) are confidential, but may be obtained with Data Use Agreements with the Massachusetts Department of Elementary and Secondary Education (DESE). Researchers interested in access to the data may contact [NAME] at [EMAIL], also see www.doe.mass.edu/research/contact.html. It can take some months to negotiate data use agreements and gain access to the data. The author will assist with any reasonable replication attempts for two years following publication.
-
-### Example for confidential Census Bureau data
-
-> All the results in the paper use confidential microdata from the U.S. Census Bureau. To gain access to the Census microdata, follow the directions here on how to write a proposal for access to the data via a Federal Statistical Research Data Center: https://www.census.gov/ces/rdcresearch/howtoapply.html. 
-You must request the following datasets in your proposal:
->1. Longitudinal Business Database (LBD), 2002 and 2007
->2. Foreign Trade Database – Import (IMP), 2002 and 2007
-[...]
-
-(adapted from [Fort (2016)](https://doi.org/10.1093/restud/rdw057))
-
-### Example for preliminary code during the editorial process
-
-> Code for data cleaning and analysis is provided as part of the replication package. It is available at https://dropbox.com/link/to/code/XYZ123ABC for review. It will be uploaded to the [JOURNAL REPOSITORY] once the paper has been conditionally accepted.
 
 Dataset list
 ------------
@@ -82,9 +59,12 @@ Dataset list
 
 | Data file | Source | Notes    |Provided |
 |-----------|--------|----------|---------|
-| `data/raw/lbd.dta` | LBD | Confidential | No |
-| `data/raw/terra.dta` | IPUMS Terra | As per terms of use | Yes |
-| `data/derived/regression_input.dta`| All listed | Combines multiple data sources, serves as input for Table 2, 3 and Figure 5. | Yes |
+| `build/input/consumer_data.csv` | CNMC | Quarterly market share data at the market level | Yes |
+| `build/input/traditional_retailers_list.csv` | Own elaboration | Used to relate each retailer to its corresponding group | Yes |
+| `analysis/input/flow_data.csv` | CNMC | Quarterly registrations, dropouts and switchings of consumers | Yes |
+| `build/input/monthly_prices.csv`| CNMC | Monthly retail electricity pricces | Yes |
+| `build/input/natural_gas-prices.csv`| MIBGAS and Bloomberg | Hourly wholesale gas pricces | Yes |
+| `build/input/smart_meter.csv`| CNMC | Quarterly share of supply points with smart meters | Yes |
 
 
 Computational requirements
