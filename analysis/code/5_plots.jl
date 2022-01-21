@@ -186,16 +186,10 @@ df2.type = ifelse.(
     )
 )
 
-# Weight of each market by type 
-weight = combine(groupby(df2, [:date,:market, :type]), :consumers => sum => :w)
-
 # Calculate share of consumers in time-of-use in each market 
-df2 = combine(groupby(df2, [:date,:market, :type, :tou]), :consumers => sum => :consumers)
-transform!(groupby(df2, [:date,:market,:type]), :consumers => function share(x) x / sum(x) end => :prop)
+df2 = combine(groupby(df2, [:date,:type, :tou]), :consumers => sum => :consumers)
+transform!(groupby(df2, [:date,:type]), :consumers => function share(x) x / sum(x) end => :prop)
 df2 = filter(row -> ( row.tou =="tou")  , df2)
-df2 = leftjoin(df2,weight,on=[:date,:market,:type])
-df2 = combine(groupby(df2,[:date,:type]), [:prop,:w] => ((p,w)-> (prop=sum(p.*w)/sum(w))) => :prop)
-
 
 # Date
 df2.date=replace.(df2.date, "T1" => "03")
