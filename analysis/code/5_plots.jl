@@ -27,7 +27,8 @@ df.date = Date.(df.date, "yyyy-mm")
 
 
 # GAS NATURAL TO NATURGY
-df.group=replace!(df.group, "GAS NATURAL" => "NATURGY")
+replace!(df.group, "GAS NATURAL" => "NATURGY")
+replace!(df.group, "OTROS" => "OTHERS")
 unique(df.group)
 
 # grey
@@ -216,18 +217,16 @@ The plot figure_2a.png has been successfully created in the analysis/output fold
 #--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # Table 1: Average market shares on incumbent territory vs non-incumbent territory
 #---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-# 
-
+#
 shares = CSV.read("build/output/market_shares.csv", DataFrame)
 
 # incumbent market shares vs non incumbent's
-sh_agg = combine(groupby(shares, [:group, :market, :incumbent]), :consumers => sum => :consumers)
-sum(sh_agg[sh_agg.incumbent .==1,:consumers]) ./ sum(sh_agg.consumers)
-sum(sh_agg[( sh_agg.incumbent .==0) .& (sh_agg.group .!= "OTHERS"),:consumers]) ./ sum(sh_agg.consumers)
+sh_agg = combine(groupby(shares, [:group, :market, :incumbent, :regulated]), :consumers => sum => :consumers)
+sum(sh_agg[(sh_agg.incumbent .==1) .& (sh_agg.regulated .== 0),:consumers]) ./ sum(sh_agg.consumers)
+sum(sh_agg[( sh_agg.incumbent .==0) .& (sh_agg.group .!= "OTHERS") .& (sh_agg.regulated .== 0),:consumers]) ./ sum(sh_agg.consumers)
 
 # basic dataset: consumers for each group and market
-sh_agg = combine(groupby(shares, [:group, :market, :incumbent]), :consumers => sum => :consumers)
+sh_agg = combine(groupby(shares, [:group, :market, :incumbent, :regulated]), :consumers => sum => :consumers)
 transform!(groupby(sh_agg, [:market]), :consumers => function fun(x) sum(x) end => :tot_consumers)
 combine(groupby(sh_agg, [:group, :incumbent]),[:consumers, :tot_consumers] => ((c, tc) ->
     share = sum(c) / sum(tc)) => :share)
-
