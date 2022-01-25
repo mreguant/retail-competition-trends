@@ -17,6 +17,12 @@ using RegressionTables
 
 cd(dirname(dirname(@__DIR__)))
 
+try
+    mkdir("analysis/output")
+catch
+    nothing    
+end
+
 ###################################
 # 0. Preparing data
 ###################################

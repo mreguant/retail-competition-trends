@@ -1,0 +1,29 @@
+\begin{tabular}{lrrr}
+\toprule
+                            & \multicolumn{3}{c}{log(share / share_others)} \\ 
+\cmidrule(lr){2-4} 
+                            &       (1) &       (2) &                   (3) \\ 
+\midrule
+incumbent                   &  2.469*** &  2.469*** &              2.824*** \\ 
+                            &   (0.040) &   (0.041) &               (0.049) \\ 
+energy_price                &  0.051*** &     0.109 &                       \\ 
+                            &   (0.014) &   (0.084) &                       \\ 
+regulated                   &  1.169*** &  1.172*** &                 0.121 \\ 
+                            &   (0.250) &   (0.251) &               (0.106) \\ 
+ordered_quarter             &     0.015 &     0.015 &                 0.108 \\ 
+                            & (199.994) & (200.762) &            (2826.143) \\ 
+regulated & ordered_quarter & -0.036*** & -0.040*** &             -0.078*** \\ 
+                            &   (0.010) &   (0.011) &               (0.005) \\ 
+\midrule
+group                       &       Yes &       Yes &                   Yes \\ 
+market                      &       Yes &       Yes &                   Yes \\ 
+date                        &       Yes &       Yes &                   Yes \\ 
+tariff                      &       Yes &       Yes &                   Yes \\ 
+market * date               &       Yes &       Yes &                   Yes \\ 
+\midrule
+Estimator                   &       OLS &        IV &                   OLS \\ 
+\midrule
+$N$                         &     2,371 &     2,371 &                 4,318 \\ 
+$R^2$                       &     0.853 &     0.852 &                 0.735 \\ 
+\bottomrule
+\end{tabular}

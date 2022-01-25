@@ -10,7 +10,6 @@ using StringEncodings
 
 cd(dirname(dirname(@__DIR__)))
 
-
 #--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # FIGURE 1a: Smartmeter penetration over time
 #---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -139,14 +138,14 @@ df1.date = Date.(df1.date, "yyyy-mm")
 
 
 p2=plot(
-    df1.date, df1.same,legend=:bottomright,linestyle=:solid, linecolor = :black, ylims=(0,10000), label="as same firm",
+    df1.date, df1.same,legend=:bottomright,linestyle=:solid, linecolor = :black, ylims=(0,10000), label="Unique incumbent",
     size=(600,400),
     grid = true, gridalpha = .2,
     legendfontsize = 11, ytickfontsize = 11,xtickfontsize = 11,
     xticks = ([Date(2011,1,1),Date(2013,01,01),Date(2015,01,01),Date(2017,01,01),Date(2019,01,01)],["2011","2013","2015","2017","2019"])
 )
 plot!(
-    df1.date, df1.dif,legend=:bottomright, linestyle=:dash,linecolor = :black, ylims=(0,10000), label="as different firms",
+    df1.date, df1.dif,legend=:bottomright, linestyle=:dash,linecolor = :black, ylims=(0,10000), label="Segmented incumbent",
     size=(600,400),
     grid = true, gridalpha = .2,
     legendfontsize = 9, ytickfontsize = 9,xtickfontsize = 9,
@@ -179,9 +178,9 @@ df2.incumbent=ifelse.(df.market.==df.group,1,0)
 
 # Create label 
 df2.type = ifelse.( 
-    (df2.incumbent .== 1) .& (df2.regulated .== 0), "Trad-com-inc", ifelse.( 
-        (df2.incumbent .== 1) .& (df2.regulated .== 1) ,"Trad-reg", ifelse.( 
-            (df2.group .!= "OTHERS"), "Trad-com", "New entrants"
+    (df2.incumbent .== 1) .& (df2.regulated .== 0), "Incumbent", ifelse.( 
+        (df2.incumbent .== 1) .& (df2.regulated .== 1) ,"Regulated", ifelse.( 
+            (df2.group .!= "OTHERS"), "Non-incumbent", "New entrants"
             )
     )
 )
@@ -212,3 +211,23 @@ savefig(p3,"analysis/output/figure_2a.png")
 
 println("\n
 The plot figure_2a.png has been successfully created in the analysis/output folder.")
+
+
+#--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# Table 1: Average market shares on incumbent territory vs non-incumbent territory
+#---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# 
+
+shares = CSV.read("build/output/market_shares.csv", DataFrame)
+
+# incumbent market shares vs non incumbent's
+sh_agg = combine(groupby(shares, [:group, :market, :incumbent]), :consumers => sum => :consumers)
+sum(sh_agg[sh_agg.incumbent .==1,:consumers]) ./ sum(sh_agg.consumers)
+sum(sh_agg[( sh_agg.incumbent .==0) .& (sh_agg.group .!= "OTHERS"),:consumers]) ./ sum(sh_agg.consumers)
+
+# basic dataset: consumers for each group and market
+sh_agg = combine(groupby(shares, [:group, :market, :incumbent]), :consumers => sum => :consumers)
+transform!(groupby(sh_agg, [:market]), :consumers => function fun(x) sum(x) end => :tot_consumers)
+combine(groupby(sh_agg, [:group, :incumbent]),[:consumers, :tot_consumers] => ((c, tc) ->
+    share = sum(c) / sum(tc)) => :share)
+

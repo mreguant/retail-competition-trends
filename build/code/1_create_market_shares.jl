@@ -75,6 +75,11 @@ df=leftjoin(df,others,on=[:date,:market,:tariff])
 sort!(df,[:market,:group,:date,:regulated,:tariff])
 
 # Write the output file
+try
+    mkdir("build/output")
+catch
+    nothing
+end
 CSV.write("build/output/market_shares.csv", df)
 
 println("\n
