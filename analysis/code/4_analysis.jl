@@ -14,7 +14,8 @@ using CategoricalArrays
 using RegressionTables
 using JuMP
 using Ipopt
-
+using DataStructures
+using Printf
 
 # Set working directory
 cd(dirname(dirname(@__DIR__)))
@@ -28,28 +29,68 @@ end
 
 
 
+# 0. Explore dropouts 
+#_______________________________________________________________________________________________________________________________________________________________________________
+##################################################################################################################################################
+
+#=
+# Consumer data
+df1 = CSV.read("brand_advantage_full.csv",DataFrame)
+df1 = combine(groupby(df1, [:date,:year,:quarter, :group, :regulated]), :consumers => sum => :consumers)
+df1 = df1[df1.regulated.==1,:]
+df1 = transform!(groupby(df1,:group), :consumers => lag => :consumers_lag)
+df1.diff = df1.consumers .- df1.consumers_lag
+select!(df1,Not(:regulated))
+
+# Flow data
+df2 = CSV.read("consumer_data.csv",DataFrame,missingstring="NA")
+replace!(df2.group , "GAS NATURAL" => "NATURGY")
+select!(df2,:date,:year,:quarter,:group,:switch_reg_other,:switch_reg_free,:switch_free_reg,:switch_other_reg,:altas_distr_reg)
+
+# Merge
+df=leftjoin(df2,df1,on=[:date,:year,:quarter,:group])
+filter!(row -> row.year.< 2020,df)
+
+# Calculate dropout
+df.dropout = -df.diff .+ df.altas_distr_reg .+ df.switch_free_reg .+ df.switch_other_reg .- df.switch_reg_free .- df.switch_reg_other
+df.dropout_p = df.dropout ./df.consumers_lag
+
+# Mean by group 
+combine(groupby(df, [ :group]), :dropout_p => mean=> :dropout_p)
+
+# Dropout = phi 
+dropmissing!(df,:dropout)
+sum(df.dropout)/sum(df.consumers)
+
+# Dropout by market  
+dfm = combine(groupby(df,[:group]), [:dropout,:consumers,:consumers_lag] .=> sum .=> [:dropout,:consumers,:consumers_lag])
+dfm.phi = dfm.dropout ./dfm.consumers_lag
+=#
+
 
 
 
 # 1. Choice Search Model 
 #_______________________________________________________________________________________________________________________________________________________________________________
 
+df = CSV.read("analysis/input/choice_search_dataset.csv",DataFrame)
 
 ## SOLVING FOR STRUCTURAL MODEL
 phi = 0.003;
-dfm = deepcopy(df)
-dfm.consumers_other_lag = dfm.consumers_comercial_lag .- dfm.consumers_inc_lag;
-dfm.new_consumers =  dfm.consumers_reg .+ dfm.consumers_comercial .- (dfm.consumers_reg_lag .+ dfm.consumers_comercial_lag) * (1.0-phi); 
+df.consumer_other_lag = df.consumer_commercial_lag .- df.consumer_inc_lag;
+df.new_consumer =  df.consumer_reg .+ df.consumer_commercial .- (df.consumer_reg_lag .+ df.consumer_commercial_lag) * (1.0-phi); 
 
-dropmissing!(dfm);
-sort!(dfm, [:market, :date]);
+df=df[.!((df.year.==2016).&(df.quarter.==1)),:]
+sort!(df, [:market, :date]);
 
-function solve_model(dfm::DataFrame,spec::String) 
+
+
+function solve_model(df::DataFrame,spec::String) 
 
     ### MODEL 
     M=5; # five markets
     J=6; # six firms (regulated=1, traditional)
-    T=length(unique(dfm.date)); # 15 quarters in the sample
+    T=length(unique(df.date)); # 15 quarters in the sample
 
     # NOTEL J = 6 is the regulated firm
     # matrix stating whether a firm is an incumbent in the market
@@ -72,36 +113,36 @@ function solve_model(dfm::DataFrame,spec::String)
     regMat[6] = 1;
 
     # moments to match -- missing number of consumers by firm-market
-    switch_i_r = transpose(reshape(convert(Array, dfm.switch_free_reg/100000.0),(T,M)));
-    switch_o_r = transpose(reshape(convert(Array, dfm.switch_other_reg/100000.0),(T,M))); 
-    switch_r_i = transpose(reshape(convert(Array, dfm.switch_reg_free/100000.0),(T,M))); 
-    switch_r_o = transpose(reshape(convert(Array, dfm.switch_reg_other/100000.0),(T,M)));
-    lag_r      = transpose(reshape(convert(Array, dfm.consumers_reg_lag/100000.0),(T,M))); 
-    lag_o      = transpose(reshape(convert(Array, dfm.consumers_OTROS_lag/100000.0),(T,M))); 
-    lag_j      = [transpose(reshape(convert(Array, dfm.consumers_EDP_lag/100000.0),(T,M))),
-                    transpose(reshape(convert(Array, dfm.consumers_ENDESA_lag/100000.0),(T,M))),
-                    transpose(reshape(convert(Array, dfm.consumers_IBERDROLA_lag/100000.0),(T,M))),
-                    transpose(reshape(convert(Array, dfm.consumers_NATURGY_lag/100000.0),(T,M))),
-                    transpose(reshape(convert(Array, dfm.consumers_REPSOL_lag/100000.0),(T,M))),
-                    transpose(reshape(convert(Array, dfm.consumers_reg_lag/100000.0),(T,M)))];
-    consumers = [transpose(reshape(convert(Array, dfm.consumers_EDP/100000.0),(T,M))),
-                    transpose(reshape(convert(Array, dfm.consumers_ENDESA/100000.0),(T,M))),
-                    transpose(reshape(convert(Array, dfm.consumers_IBERDROLA/100000.0),(T,M))),
-                    transpose(reshape(convert(Array, dfm.consumers_NATURGY/100000.0),(T,M))),
-                    transpose(reshape(convert(Array, dfm.consumers_REPSOL/100000.0),(T,M))),
-                    transpose(reshape(convert(Array, dfm.consumers_reg/100000.0),(T,M)))];                
-    new        = transpose(reshape(convert(Array, dfm.new_consumers/100000.0),(T,M))); 
-    new_r      = transpose(reshape(convert(Array, dfm.altas_distr_reg/100000.0),(T,M))); 
-    quarter    = transpose(reshape(convert(Array, dfm.quarter),(T,M)));
-    smartm    = transpose(reshape(convert(Array, dfm.smartmeter),(T,M))); 
-    weight     = transpose(reshape(convert(Array, dfm.consumers_market/10000.0),(T,M))); 
+    switch_i_r = transpose(reshape(convert(Array, df.switch_inc_reg/100000.0),(T,M)));
+    switch_o_r = transpose(reshape(convert(Array, df.switch_others_reg/100000.0),(T,M))); 
+    switch_r_i = transpose(reshape(convert(Array, df.switch_reg_inc/100000.0),(T,M))); 
+    switch_r_o = transpose(reshape(convert(Array, df.switch_reg_others/100000.0),(T,M)));
+    lag_r      = transpose(reshape(convert(Array, df.consumer_reg_lag/100000.0),(T,M))); 
+    lag_o      = transpose(reshape(convert(Array, df.consumer_OTHERS_lag/100000.0),(T,M))); 
+    lag_j      = [transpose(reshape(convert(Array, df.consumer_EDP_lag/100000.0),(T,M))),
+                    transpose(reshape(convert(Array, df.consumer_ENDESA_lag/100000.0),(T,M))),
+                    transpose(reshape(convert(Array, df.consumer_IBERDROLA_lag/100000.0),(T,M))),
+                    transpose(reshape(convert(Array, df.consumer_NATURGY_lag/100000.0),(T,M))),
+                    transpose(reshape(convert(Array, df.consumer_REPSOL_lag/100000.0),(T,M))),
+                    transpose(reshape(convert(Array, df.consumer_reg_lag/100000.0),(T,M)))];
+    consumers = [transpose(reshape(convert(Array, df.consumer_EDP/100000.0),(T,M))),
+                    transpose(reshape(convert(Array, df.consumer_ENDESA/100000.0),(T,M))),
+                    transpose(reshape(convert(Array, df.consumer_IBERDROLA/100000.0),(T,M))),
+                    transpose(reshape(convert(Array, df.consumer_NATURGY/100000.0),(T,M))),
+                    transpose(reshape(convert(Array, df.consumer_REPSOL/100000.0),(T,M))),
+                    transpose(reshape(convert(Array, df.consumer_reg/100000.0),(T,M)))];                
+    new        = transpose(reshape(convert(Array, df.new_consumer/100000.0),(T,M))); 
+    new_r      = transpose(reshape(convert(Array, df.registration_distr_reg/100000.0),(T,M))); 
+    quarter    = transpose(reshape(convert(Array, df.quarter),(T,M)));
+    smartm    = transpose(reshape(convert(Array, df.smartmeter),(T,M))); 
+    weight     = transpose(reshape(convert(Array, df.consumer_market/10000.0),(T,M))); 
 
-    price = [transpose(reshape(convert(Array, dfm.price_EDP),(T,M))),
-    transpose(reshape(convert(Array, dfm.price_ENDESA),(T,M))),
-    transpose(reshape(convert(Array, dfm.price_IBERDROLA),(T,M))),
-    transpose(reshape(convert(Array, dfm.price_NATURGY),(T,M))),
-    transpose(reshape(convert(Array, dfm.price_REPSOL),(T,M))),
-    transpose(reshape(convert(Array, dfm.price_reg),(T,M)))];                
+    price = [transpose(reshape(convert(Array, df.price_EDP*100),(T,M))),
+    transpose(reshape(convert(Array, df.price_ENDESA*100),(T,M))),
+    transpose(reshape(convert(Array, df.price_IBERDROLA*100),(T,M))),
+    transpose(reshape(convert(Array, df.price_NATURGY*100),(T,M))),
+    transpose(reshape(convert(Array, df.price_REPSOL*100),(T,M))),
+    transpose(reshape(convert(Array, df.price_reg*100),(T,M)))];                
 
     model = Model(optimizer_with_attributes(Ipopt.Optimizer, "print_level"=> 2, "nlp_scaling_method" => "gradient-based"));
 
@@ -227,9 +268,9 @@ function solve_model(dfm::DataFrame,spec::String)
     optimize!(model);
 
     #check that model matches lambdas
-    mean(dfm.lambdas)-mean(JuMP.value.(Lambda))
+    mean(df.lambdas)-mean(JuMP.value.(Lambda))
 
-    return [mean(dfm.lambdas)-mean(JuMP.value.(Lambda)),
+    return [mean(df.lambdas)-mean(JuMP.value.(Lambda)),
             JuMP.value.(incL),
             JuMP.value.(regL),
             JuMP.value.(smartL),
@@ -245,12 +286,12 @@ function solve_model(dfm::DataFrame,spec::String)
 end
 
 spec = [Vector{Float64}(undef,1) for _ in 1:4];
-spec[1] = solve_model(dfm,"baseline");
-spec[2] = solve_model(dfm,"prices");
-spec[3] = solve_model(dfm,"smart_prices");
-spec[4] = solve_model(dfm,"overkill");
+spec[1] = solve_model(df,"baseline");
+spec[2] = solve_model(df,"prices");
+spec[3] = solve_model(df,"smart_prices");
+spec[4] = solve_model(df,"overkill");
 
-names = OrderedDict(2=>"Incumbent (\$\\beta^i\$) ",
+titles = OrderedDict(2=>"Incumbent (\$\\beta^i\$) ",
             3=>"Regulated (\$\\beta^r\$) ",
             4=>"Smart meter ",
             10=>"\$\\overline{\\lambda}\$ ",
@@ -262,8 +303,9 @@ names = OrderedDict(2=>"Incumbent (\$\\beta^i\$) ",
             12=>"\$\\overline{P}\$ Incumbent ",
             11=>"\$\\overline{P}\$  Regulated ",
             13=>"\$\\overline{P}\$  Fringe ");
-for (key,name) in names
-    print(name)
+
+for (key,title) in titles
+    print(title)
     for i=1:4
         print(" & ")    
         print(@sprintf "%.2f" spec[i][key])
@@ -283,7 +325,8 @@ end
 
 df = CSV.read("analysis/input/smart_meter_regression_dataset.csv",DataFrame)
 
-df = combine(groupby(df, [:date,:group, :market,:tou,:smartmeter, ]), :consumer => sum => :consumer)
+
+df = combine(groupby(df, [:date,:market,:group,:tou,:smartmeter, ]), :consumer => sum => :consumer)
 transform!(groupby(df, [:date, :market]), :consumer => function share(x) x / sum(x) end => :share_group)
 transform!(groupby(df, [:date, :market]), :consumer => sum => :consumer_market)
 
@@ -301,6 +344,6 @@ model_agg = reg(df_fringe_agg, @formula(log(share_group)   ~ smartmeter+ fe(mark
 
 # Generate latex output 
 ###################################################################################################################################################################################
-regtable(model_tou,model_agg; renderSettings = asciiOutput())
-regtable(model_tou,model_agg; renderSettings = latexOutput("analysis/output/figure_2b.tex"))
+regtable(model_agg,model_tou; renderSettings = asciiOutput(), estimformat = "%0.2f",statisticformat="%0.2f", regression_statistics = [:nobs,:adjr2])
+regtable(model_agg,model_tou; renderSettings = latexOutput("analysis/output/figure_2b.tex"))
 ##################################################################################################################################################################################

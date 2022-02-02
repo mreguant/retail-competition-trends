@@ -10,44 +10,11 @@ using StringEncodings
 
 cd(dirname(dirname(@__DIR__)))
 
-#--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-# FIGURE 1a: Smartmeter penetration over time
-#---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-# Load csv
-df =CSV.read("build/input/smart_meter.csv",DataFrame)
-
-# Date
-df=rename(df,"FECHA"=>"date")
-df.date=replace.(df.date, "T1" => "03")
-df.date=replace.(df.date, "T2" => "06")
-df.date=replace.(df.date, "T3" => "09")
-df.date=replace.(df.date, "T4" => "12")
-df.date=replace.(df.date, "_" => "-")
-df.date = Date.(df.date, "yyyy-mm")
-
-
-# GAS NATURAL TO NATURGY
-replace!(df.group, "GAS NATURAL" => "NATURGY")
-replace!(df.group, "OTROS" => "OTHERS")
-unique(df.group)
-
-# grey
-p1=plot(
-    df.date, df.smartmeter,group=df.group,markershape = :auto, legend=:bottomright, linecolor = :black,markercolor=:black,
-    size=(600,400),
-    grid = true, gridalpha = .2,
-    legendfontsize = 9, ytickfontsize = 9,xtickfontsize = 9,
-    xticks = ([Date(2016,1,1),Date(2017,01,01),Date(2018,01,01),Date(2019,01,01),Date(2020,01,01)],["2016","2017","2018","2019","2020"])
-)
-savefig(p1,"analysis/output/figure_1a.png")
-
-println("\n
-The plot figure_1a.png has been successfully created in the analysis/output folder.")
 
 
 
 #---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-# Figure 1b: HHI for each market over time
+# Figure 1a: Market-level HHI over time
 #----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # Preparing data
@@ -214,19 +181,52 @@ println("\n
 The plot figure_2a.png has been successfully created in the analysis/output folder.")
 
 
-#--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-# Table 1: Average market shares on incumbent territory vs non-incumbent territory
-#---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-#
-shares = CSV.read("build/output/market_shares.csv", DataFrame)
 
-# incumbent market shares vs non incumbent's
-sh_agg = combine(groupby(shares, [:group, :market, :incumbent, :regulated]), :consumers => sum => :consumers)
-sum(sh_agg[(sh_agg.incumbent .==1) .& (sh_agg.regulated .== 0),:consumers]) ./ sum(sh_agg.consumers)
-sum(sh_agg[( sh_agg.incumbent .==0) .& (sh_agg.group .!= "OTHERS") .& (sh_agg.regulated .== 0),:consumers]) ./ sum(sh_agg.consumers)
 
-# basic dataset: consumers for each group and market
-sh_agg = combine(groupby(shares, [:group, :market, :incumbent, :regulated]), :consumers => sum => :consumers)
-transform!(groupby(sh_agg, [:market]), :consumers => function fun(x) sum(x) end => :tot_consumers)
-combine(groupby(sh_agg, [:group, :incumbent]),[:consumers, :tot_consumers] => ((c, tc) ->
-    share = sum(c) / sum(tc)) => :share)
+
+
+
+#---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# Figure 1b: Retail electricity prices
+#----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+# Load data
+df = CSV.read("build/input/monthly_prices.csv", DataFrame)
+show(describe(df), allrows = true)
+
+filter!(row -> row.tariff == "2.0A", df)
+
+df[:, :en_price] = df.IMPORTE_ENERGIA ./ df.CONSUMO_TOTAL
+df[:, :fin_price] = df.IMPORTE_TOTAL ./ df.CONSUMO_TOTAL
+
+
+
+df_1 = filter(row -> row.TIPO_COM == "others", df)
+
+
+df_2 = filter(row -> row.TIPO_COM == "5_TRADICIONALES", df)
+filter!(row -> row.main_retailer == true, df_2)
+
+df_21 = combine(groupby(df_2, [:date, :COMERCIALIZADOR]), [:en_price, :fin_price] .=> mean .=> [:en_price, :fin_price])
+sort!(df_21, [:COMERCIALIZADOR])
+
+df_3 = filter(row -> row.TIPO_COM == "COR", df)
+
+
+
+# Create vectors for legend 
+others = hcat("New entrants",fill("",1,300))
+trad = hcat("Traditional",fill("",1,5))
+
+
+plot(size = (600,400))
+p1_fin = plot!(df_1.date, df_1.fin_price, group = df_1.ID_OFERTA, ylims = (0.175,0.32),ylabel = "€ / KWh",ylabelfontsize = 8,
+    label=others, linecolor = :lightgrey, titlefontsize = 8,
+    xticks = ([Date(2012,1,01),Date(2014,1,01),Date(2016,1,1),Date(2018,01,01),Date(2020,01,01)],["2012","2014","2016","2018","2020"]),
+    left_margin = 5Plots.mm
+)
+p2_fin = plot!(df_21.date, df_21.fin_price, group = df_21.COMERCIALIZADOR, label=trad, linecolor = :black,linestyle=:dash)
+p3_fin = plot!(df_3.date, df_3.fin_price, label = "Regulated", linecolor = :black, linewidth = 3,legend=:topleft)
+savefig(string(shared_drive_path,"/00_outputs/5.retail_competition/0paper/average_total_prices.pdf"))
+
