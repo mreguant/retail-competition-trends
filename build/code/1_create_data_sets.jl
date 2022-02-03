@@ -92,8 +92,7 @@ end
 CSV.write("analysis/input/smart_meter_regression_dataset.csv", df)
 
 
-println("\n
-The file smart_meter_regression_dataset.csv has been successfully created in the analysis\\input folder.\n")
+println("The file smart_meter_regression_dataset.csv has been successfully created in the analysis\\input folder.")
 
 ##################################################################################################################################################################################
 
@@ -237,6 +236,5 @@ dfinal.Po =  dfinal.switch_reg_others ./ (dfinal.consumer_reg_lag .* dfinal.lamb
 CSV.write("analysis/input/choice_search_dataset.csv", dfinal)
 
 
-println("\n
-The file choice_search_dataset.csv has been successfully created in the analysis\\input folder.\n")
+println("The file choice_search_dataset.csv has been successfully created in the analysis\\input folder.")
 ##################################################################################################################################################################################

@@ -122,8 +122,7 @@ plot!(
 savefig(p1,"analysis/output/figure_1a.png")
 
 
-println("\n 
-The plot figure_1a.png has been successfully created in the analysis\\output folder.\n")
+println("The plot figure_1a.png has been successfully created in the analysis\\output folder.")
 
 
 
@@ -181,8 +180,7 @@ p2=plot(
 savefig(p2,"analysis/output/figure_2a.png")
 
 
-println("\n
-The plot figure_2a.png has been successfully created in the analysis\\output folder.\n")
+println("The plot figure_2a.png has been successfully created in the analysis\\output folder.")
 
 
 
@@ -208,14 +206,14 @@ df2 = filter(row -> row.retailer_type == "traditional", df)
 df3 = filter(row -> row.retailer_type == "regulated", df)
 
 # Create vectors for legend 
-others = hcat("New entrants",fill("",1,length(unique(df1.retailer))))
+others = hcat("New entrants",fill("",1,length(unique(df1.contract_id))))
 trad = hcat("Traditional",fill("",1,5))
+
 
 # Plot together
 p3 = plot(size = (600,400), legend=:topleft,
         xticks = ([Date(2012,1,01),Date(2014,1,01),Date(2016,1,1),Date(2018,01,01),Date(2020,01,01)],["2012","2014","2016","2018","2020"]),
         ylims = (0.175,0.32), ylabel = "€ / KWh", ylabelfontsize = 8)
-
 plot!(df1.date, df1.avbill, group = df1.contract_id, label=others, linecolor =:lightgrey)  
 plot!(df2.date, df2.avbill, group = df2.retailer, label=trad, linecolor =:black, linestyle=:dash)
 plot!(df3.date, df3.avbill, label = "Regulated", linecolor = :black, linewidth = 3)
@@ -223,7 +221,6 @@ plot!(df3.date, df3.avbill, label = "Regulated", linecolor = :black, linewidth =
 savefig(p3,"analysis/output/figure_1b.png")
 
 
-println("\n
-The plot figure_1b.png has been successfully created in the analysis\\output folder.\n")
+println("The plot figure_1b.png has been successfully created in the analysis\\output folder.")
 
 

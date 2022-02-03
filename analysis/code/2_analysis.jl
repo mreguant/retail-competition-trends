@@ -340,8 +340,7 @@ open("analysis/output/table_1.txt","a") do io
 end
 
 
-println("\n
-The file table_1.txt has been successfully created in the analysis\\output folder.\n")
+println("The file table_1.txt has been successfully created in the analysis\\output folder.")
 
 
 ###################################################################################################################################################################################
@@ -382,7 +381,6 @@ model_agg = reg(df_fringe_agg, @formula(log(share_group)   ~ smartmeter+ fe(mark
 regtable(model_agg,model_tou; renderSettings = asciiOutput(), estimformat = "%0.2f",statisticformat="%0.2f", regression_statistics = [:nobs,:adjr2])
 regtable(model_agg,model_tou; renderSettings = latexOutput("analysis/output/figure_2b.tex"))
 
-println("\n
-The file figure_2b.tex has been successfully created in the analysis\\output folder.\n")
+println("The file figure_2b.tex has been successfully created in the analysis\\output folder.")
 
 ##################################################################################################################################################################################
