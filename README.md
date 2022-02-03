@@ -1,5 +1,5 @@
 # Code and data repository for "Smart Meters and Retail Competition: Trends and Challenges"
-Authors: Jacint Enrich, Ruoyi Li, Alejandro Mizrahi, and Mar Reguant
+Authors: Mar Reguant, Jacint Enrich, Ruoyi Li, and Alejandro Mizrahi
 
 Description
 --------
