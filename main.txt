@@ -3,17 +3,17 @@
 # assign the path to the folder "repository" to the current directory 
 cd C:\Users\Alejandro\Desktop\repository
 
-# modify the path where the Julia setup file (.exe) is located
+# modify the path where the Julia setup file (.exe) is located.
+# for Windows user, type "julia" in Windows Search, click on "Open file location", click on "Properties" and copy path that appears in "Target" 
 set PATH=%PATH%;C:\Users\Alejandro\AppData\Local\Programs\Julia-1.6.2\bin
 
 # install required packages 
 julia 0_setup.jl
 
 # data cleaning and transformations
-julia build\code\1_create_market_shares.jl
-julia build\code\2_create_retailing_costs.jl
-julia build\code\3_create_first_stage_dataset.jl
+julia build\code\1_create_data_sets.jl
+
 
 # analysis and output generation
-julia analysis\code\4_regressions.jl
-julia analysis\code\5_plots.jl
+julia analysis\code\2_analysis.jl
+julia analysis\code\3_plots.jl

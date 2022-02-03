@@ -15,8 +15,9 @@ end
 ### comprehensive list of all required packages to run the full code
 
 required_packages = [
-    "CSV", "DataFrames", "StringEncodings","Dates", "Statistics", "TimeZones",
-    "StatFiles","ShiftedArrays", "Plots", "FixedEffectModels", "CategoricalArrays", "RegressionTables"
+    "CSV", "DataFrames", "StringEncodings", "ShiftedArrays","Statistics",
+    "JuMP", "Ipopt","DataStructures", "Printf",
+    "FixedEffectModels", "CategoricalArrays", "RegressionTables","Plots","Dates"
 ]
 
 ### check which packages are already installed
