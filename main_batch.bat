@@ -11,7 +11,7 @@ ECHO Current directory: %~dp0
 CD %~dp0
 PAUSE
 
-
+ECHO =
 ECHO =====================================================================
 ECHO Type the path were the Julia program is located.
 ECHO Example: C:\Users\Alejandro\AppData\Local\Programs\Julia-1.6.2\bin
@@ -19,24 +19,27 @@ ECHO Windows Users can find it in their shortcut to Julia .exe file on Propertie
 SET /p JULIA_PATH= Path to Julia's program: 
 SET PATH=%JULIA_PATH%
 
-
+ECHO =
 ECHO =====================================================================
 ECHO Required packages are being installed.
 ECHO JULIA 0_setup.jl
 ECHO Required packages have been successfully installed
 PAUSE
 
+ECHO =
 ECHO =====================================================================
 ECHO Cleaning datasets . . .
 JULIA build\code\1_create_data_sets.jl
 PAUSE
 
+ECHO =
 ECHO =====================================================================
 ECHO Running analysis to generate tables and figures . . .
 JULIA analysis\code\2_analysis.jl
 JULIA analysis\code\3_plots.jl
 ECHO END.
 
+ECHO =
 ECHO =====================================================================
 ECHO =					
 ECHO =				BARCELONA ENERGY HUB         		

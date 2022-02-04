@@ -78,7 +78,7 @@ Computational requirements
   - `Ipopt` v0.7.0
   - `DataStructures` v0.18.11
   - `Printf`
-  - the program "`0_setup.jl`" will install all dependencies, and should be run once.
+  - the program "`0_setup.jl`" will install all dependencies. It should be run once.
 
 The main file to run all the code uses the Windows Command Prompt, which may require Windows 10 or higher.
 
@@ -110,7 +110,7 @@ Description of programs/code
 ----------------------------
 
 - The program `0_setup.jl` installs all required dependencies in Julia.
-- The program `build/code/1_create_data_sets.jl` computes the market shares based on the number of supply points in each market and tariff, and combines market shares with retail electricity prices, and smart meter data.
+- The program `build/code/1_create_data_sets.jl` computes the market shares based on the number of supply points in each market and tariff, and combines market shares with retail electricity prices and smart meter data.
 - The program `analysis/code/2_analysis.jl` compute the calibration and regression in table 1 and 2b. 
 - The program `analysis/code/3_plots.jl` will generate the figures 1a, 1b and 2a.
 
@@ -136,4 +136,4 @@ The provided code reproduces:
 | Table 2b          | analysis/code/2_analysis.jl     | 382         | figure_2b.tex                    |
 | Figure 1a         | analysis/code/3_plots.jl        | 42          | figure_1a.png                    |  
 | Figure 1b         | analysis/code/3_plots.jl        | 155         | figure_1b.png                    |
-| Figure 2a         | analysis/code/3_plots.jl        |             | figure_2a.png                    | 
+| Figure 2a         | analysis/code/3_plots.jl        | 180         | figure_2a.png                    | 
