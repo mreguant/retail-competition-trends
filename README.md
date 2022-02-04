@@ -3,7 +3,7 @@ Authors: Mar Reguant, Jacint Enrich, Ruoyi Li, and Alejandro Mizrahi
 
 Description
 --------
-This repository replicates the results for the paper "Smart Meters and Retail Competition: Trends and Challenges". The code is written in Julia. The main file "main" runs all of the code to generate the data for the 3 figures and 2 tables in the paper. 
+This repository replicates the results for the paper "Smart Meters and Retail Competition: Trends and Challenges". The code is written in Julia. The file "main.bat" runs all of the code to generate the data for the 3 figures and 2 tables in the paper. 
 
 Data Availability and Provenance Statements
 ----------------------------
@@ -54,9 +54,7 @@ Dataset list
 | `build/input/consumer_data.csv` | CNMC | Quarterly market share data at the market level | Yes |
 | `build/input/traditional_retailers_list.csv` | Own elaboration | Used to relate each retailer to its corresponding group | Yes |
 | `analysis/input/flow_data.csv` | CNMC | Quarterly registrations, dropouts and switchings of consumers | Yes |
-| `build/input/monthly_prices.csv`| CNMC | Monthly retail electricity pricces | Yes |
-| `build/input/natural_gas-prices.dta`| MIBGAS and Bloomberg | Hourly wholesale gas pricces | Yes |
-| `build/input/hourly_retailing_costs.dta`| REE | Hourly retailing costs | Yes |
+| `build/input/monthly_prices.csv`| CNMC | Monthly retail electricity prices | Yes |
 | `build/input/smart_meter.csv`| CNMC | Quarterly share of supply points with smart meters | Yes |
 
 
@@ -76,9 +74,13 @@ Computational requirements
   - `FixedEffectModels` v1.6.3
   - `CategoricalArrays` v0.9.7
   - `RegressionTables` v0.5.3
+  - `JuMP` v0.21.10
+  - `Ipopt` v0.7.0
+  - `DataStructures` v0.18.11
+  - `Printf`
   - the program "`0_setup.jl`" will install all dependencies, and should be run once.
 
-The main file to run the whole repository uses the Windows Command Prompt, which may require Windows 10 or higher.
+The main file to run all the code uses the Windows Command Prompt, which may require Windows 10 or higher.
 
 ### Controlled Randomness
 
@@ -107,19 +109,16 @@ The code was last run on a **11th Gen Intel(R) Core(TM) i5-1135G with Windows 10
 Description of programs/code
 ----------------------------
 
-- The program `0_setup.jl` will install all required dependencies in Julia.
-- The program `build/code/1_create_market_shares.jl` will compute the market shares based on the number of supply points in each market and tariff.
-- The program `build/code/2_create_retailing_costs.jl` will compute the retailing costs for each quarter.
-- The program `build/code/3_create_first_stage_dataset.jl` will combine market shares with retail electricity prices, gas prices, retailing costs and smart meter data.
-- The program `analysis/code/4_regressions.jl` will compute the regressions in table 1 and 2b. 
-- The program `analysis/code/5_plots.jl` will generate the figures 1a, 1b and 2a.
+- The program `0_setup.jl` installs all required dependencies in Julia.
+- The program `build/code/1_create_data_sets.jl` computes the market shares based on the number of supply points in each market and tariff, and combines market shares with retail electricity prices, and smart meter data.
+- The program `analysis/code/2_analysis.jl` compute the calibration and regression in table 1 and 2b. 
+- The program `analysis/code/3_plots.jl` will generate the figures 1a, 1b and 2a.
 
 Instructions to Replicators
 ---------------------------
 
 - Run `0_setup.jl` once to install the required packages. 
-- Edit `main.txt` to adjust the default path where the current repository is located and add Julia to the PATH environment variable.
-- Run `main.txt` to run all steps in sequence.
+- Run `main.bat` to generate all the outputs sequencially. The only requirement for the user will be typing the path to the Julia program (the original .exe file) to execute Julia through the console.
 
 List of tables and programs
 ---------------------------
@@ -133,8 +132,8 @@ The provided code reproduces:
 
 | Figure/Table #    | Program                         | Line Number | Output file                      |
 |-------------------|---------------------------------|-------------|----------------------------------|
-| Table 1           | analysis/code/4_regressions.jl  | 96          | table_1.tex                      |
-| Table 2b          | analysis/code/4_regressions.jl  | 273         | figure_2b.tex                    |
-| Figure 1a         | analysis/code/5_plots.jl        | 42          | figure_1a.png                    |  
-| Figure 1b         | analysis/code/5_plots.jl        | 155         | figure_1b.png                    |
-| Figure 2a         | analysis/code/5_plots.jl        |             | figure_2a.png                    | 
+| Table 1           | analysis/code/2_analysis.jl     | 324         | table_1.tex                      |
+| Table 2b          | analysis/code/2_analysis.jl     | 382         | figure_2b.tex                    |
+| Figure 1a         | analysis/code/3_plots.jl        | 42          | figure_1a.png                    |  
+| Figure 1b         | analysis/code/3_plots.jl        | 155         | figure_1b.png                    |
+| Figure 2a         | analysis/code/3_plots.jl        |             | figure_2a.png                    | 

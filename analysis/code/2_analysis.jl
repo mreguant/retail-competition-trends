@@ -321,7 +321,7 @@ footer = s"""\midrule
 
 # Generate latex output 
 ###################################################################################################################################################################################
-open("analysis/output/table_1.txt","a") do io
+open("analysis/output/table_1.tex","a") do io
     println(io,header)
     for (key,title) in titles
         if key in [10,12]
