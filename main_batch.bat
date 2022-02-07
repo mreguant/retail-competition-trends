@@ -22,7 +22,7 @@ SET PATH=%JULIA_PATH%
 ECHO =
 ECHO =====================================================================
 ECHO Required packages are being installed.
-ECHO JULIA 0_setup.jl
+JULIA 0_setup.jl
 ECHO Required packages have been successfully installed
 PAUSE
 

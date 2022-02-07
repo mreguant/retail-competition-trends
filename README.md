@@ -90,7 +90,7 @@ The main file to run all the code uses the Windows Command Prompt, which may req
 
 #### Summary
 
-Approximate time needed to reproduce the analyses on a standard (CURRENT YEAR) desktop machine:
+Approximate time needed to reproduce the analyses on a standard 2022 desktop machine:
 
 - [x] <10 minutes
 - [ ] 10-60 minutes
