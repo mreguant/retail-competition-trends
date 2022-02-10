@@ -4,33 +4,30 @@ ECHO =
 ECHO =   This file will generate all the outputs included in the paper.  
 ECHO = 									 
 ECHO =====================================================================
-PAUSE
 
 ECHO The path of the "retail-competition-trends" repository is defined as current directory:
 ECHO Current directory: %~dp0
 CD %~dp0
-PAUSE
 
 ECHO =
 ECHO =====================================================================
-ECHO Type the path were the Julia program is located.
+ECHO Add Julia to the PATH to run Julia from the command line. See: https://julialang.org/downloads/platform/ 
+SET PATH = %PATH%
+ECHO Alternatively, type the path were the Julia program is located.
 ECHO Example: C:\Users\Alejandro\AppData\Local\Programs\Julia-1.6.2\bin
-ECHO Windows Users can find it in their shortcut to Julia .exe file on Properties/Target
-SET /p JULIA_PATH= Path to Julia's program: 
-SET PATH=%JULIA_PATH%
+SET /p JULIA_PATH= Path to Julia's program (ommit this step by pressing Enter): 
+SET PATH=%PATH%;%JULIA_PATH%
 
 ECHO =
 ECHO =====================================================================
 ECHO Required packages are being installed.
 JULIA 0_setup.jl
 ECHO Required packages have been successfully installed
-PAUSE
 
 ECHO =
 ECHO =====================================================================
 ECHO Cleaning datasets . . .
 JULIA build\code\1_create_data_sets.jl
-PAUSE
 
 ECHO =
 ECHO =====================================================================

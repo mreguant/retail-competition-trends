@@ -27,12 +27,12 @@ Data Availability and Provenance Statements
 ### Market share data
 > Data on market share were downloaded from CNMC's 2019 Electricity Retail Market Monitoring Report (https://www.cnmc.es/expedientes/isde02720). Data are available from Q1 2011 to Q4 2019. 
 
-Datafiles: `consumer_data.csv`, `traditional_retailers_list.csv`
+Datafiles: `consumer_data.csv`, `traditional_retailers_list.csv`.
 
 ### Flow data 
 > Data on consumers' flow were digitalised from CNMC’s Quarterly Monitoring Reports on Changes of Retailer (https://www.cnmc.es/expedientes?t=IS+SOBRE+CAMBIOS+DE+COMERCIALIZADOR&idambito=All&edit-submit-buscador-expedientes=Buscar&idtipoexp=All&hidprocedim=All). Data are available from Q1 2016 to Q3 2020. 
 
-Datafile: `flow_data.csv`
+Datafile: `flow_data.csv`.
 
 ### Price data 
 > Historical data on retail electricity prices were provide by CNMC upon request. A rearranged version of these data are provided as part of this archive. These data are available on a daily basis on the CNCMC's price comparison website (https://comparador.cnmc.gob.es/). Data are available from December 2011 to May 2021. In addition, data on gas prices are from MIBGAS and Bloomberg, and data on retailing costs, from Red Eléctrica de España (REE).  
@@ -43,7 +43,7 @@ Datafiles: `monthly_prices.csv`, `natural_gas_prices.dta`, `hourly_retailing_cos
 ### Smart meter data
 > Data on smart meter's adoption were digitalised from CNMC's Equipment Integrated in the Remote Management System Reports (https://www.cnmc.es/expedientes?t=TELEGESTION&idambito=All&edit-submit-buscador-expedientes=Buscar&idtipoexp=All&hidprocedim=All). Data are available from July 2015 to December 2019.  
 
-Datafile: `smart_meter.csv`
+Datafile: `smart_meter.csv`.
 
 
 Dataset list
@@ -92,8 +92,8 @@ The main file to run all the code uses the Windows Command Prompt, which may req
 
 Approximate time needed to reproduce the analyses on a standard 2022 desktop machine:
 
-- [x] <10 minutes
-- [ ] 10-60 minutes
+- [] <10 minutes
+- [x] 10-60 minutes
 - [ ] 1-8 hours
 - [ ] 8-24 hours
 - [ ] 1-3 days
@@ -118,7 +118,7 @@ Instructions to Replicators
 ---------------------------
 
 - Run `0_setup.jl` once to install the required packages. 
-- Run `main.bat` to generate all the outputs sequencially. The only requirement for the user will be typing the path to the Julia program (the original .exe file) to execute Julia through the console.
+- For Windows (MacOS) users, run `main_windows.bat` (`main_macOS.sh`) to generate all the outputs sequencially. To run Julia from the command line, add Julia to the PATH environment variable. See https://julialang.org/downloads/platform. 
 
 List of tables and programs
 ---------------------------

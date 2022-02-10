@@ -2,12 +2,14 @@
 # Install the required packages
 ####################################
 
-### create a function to install those packages that are not installed
+### create a function to install those packages that are not installed (and update the already installed ones)
 
 install_packages = function(req_pkg, ins_pkg) 
     for p in req_pkg 
         if !in(p,ins_pkg) 
             Pkg.add(p)
+        else
+            Pkg.update(p)
         end 
     end
 end
