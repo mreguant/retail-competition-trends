@@ -4,9 +4,10 @@
 
 using CSV
 using DataFrames
+using StringEncodings
 using Dates
 using Plots
-using StringEncodings
+
 
 cd(dirname(dirname(@__DIR__)))
 

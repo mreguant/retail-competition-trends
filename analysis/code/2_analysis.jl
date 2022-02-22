@@ -6,9 +6,9 @@
 
 
 ### Load Packages
+using CSV
 using DataFrames
 using Statistics
-using CSV
 using FixedEffectModels
 using CategoricalArrays
 using RegressionTables

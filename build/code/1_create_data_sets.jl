@@ -7,8 +7,8 @@
 
 
 # Load packages
-using DataFrames
 using CSV
+using DataFrames
 using StringEncodings
 using Statistics
 using ShiftedArrays
