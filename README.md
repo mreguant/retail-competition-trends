@@ -20,24 +20,24 @@ Data Availability and Provenance Statements
 
 ### Details on each Data Source
 
-## Market share data
+#### Market share data
 > Data on market shares were downloaded from CNMC's 2019 Electricity Retail Market Monitoring Report (https://www.cnmc.es/expedientes/isde02720). Data are available from Q1 2011 to Q4 2019. 
 
 Datafiles: `consumer_data.csv`, `traditional_retailers_list.csv`.
 
-## Flow data 
+#### Flow data 
 > Data on consumers' flows were digitalised from CNMC’s Quarterly Monitoring Reports on Changes of Retailer (https://www.cnmc.es/expedientes?t=IS+SOBRE+CAMBIOS+DE+COMERCIALIZADOR&idambito=All&edit-submit-buscador-expedientes=Buscar&idtipoexp=All&hidprocedim=All). Data are available from Q1 2016 to Q3 2020. 
 
 Datafile: `flow_data.csv`.
 
 
-## Smart meter data
+#### Smart meter data
 > Data on smart meter's adoption were digitalised from CNMC's Equipment Integrated in the Remote Management System Reports (https://www.cnmc.es/expedientes?t=TELEGESTION&idambito=All&edit-submit-buscador-expedientes=Buscar&idtipoexp=All&hidprocedim=All). Data are available from July 2015 to December 2019.  
 
 Datafile: `smart_meter.csv`.
 
 
-## Price data 
+#### Price data 
 > Historical data on retail electricity prices were provided by the CNMC and are confidential. 
 
 
