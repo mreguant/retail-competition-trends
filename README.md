@@ -3,7 +3,7 @@ Authors: Mar Reguant, Jacint Enrich, Ruoyi Li, and Alejandro Mizrahi
 
 Description
 --------
-This repository replicates the results for the paper "Smart Meters and Retail Competition: Trends and Challenges". The code is written in Julia. The file "main.bat" runs all of the code to generate the data for the 3 figures and 2 tables in the paper. 
+This repository replicates the results for the paper "Smart Meters and Retail Competition: Trends and Challenges". The code is written in Julia. The file "main_windows" or "main_macOS" runs all of the code to generate the data for the 2 figures and 2 tables in the paper. Because price data are confidential, this repository replicates the results without them. 
 
 Data Availability and Provenance Statements
 ----------------------------
@@ -18,8 +18,8 @@ Data Availability and Provenance Statements
 
 ### Summary of Availability
 
-- [x] All data **are** publicly available.
-- [ ] Some data **cannot be made** publicly available.
+- [ ] All data **are** publicly available.
+- [x] Some data **cannot be made** publicly available.
 - [ ] **No data can be made** publicly available.
 
 ### Details on each Data Source
@@ -35,9 +35,7 @@ Datafiles: `consumer_data.csv`, `traditional_retailers_list.csv`.
 Datafile: `flow_data.csv`.
 
 ### Price data 
-> Historical data on retail electricity prices were provide by CNMC upon request. A rearranged version of these data are provided as part of this archive. These data are available on a daily basis on the CNCMC's price comparison website (https://comparador.cnmc.gob.es/). Data are available from December 2011 to May 2021. In addition, data on gas prices are from MIBGAS and Bloomberg, and data on retailing costs, from Red Eléctrica de España (REE).  
-
-Datafiles: `monthly_prices.csv`, `natural_gas_prices.dta`, `hourly_retailing_costs.dta`.
+> Historical data on retail electricity prices were provided by the CNMC and are confidential. 
 
 
 ### Smart meter data
@@ -53,9 +51,8 @@ Dataset list
 |-----------|--------|----------|---------|
 | `build/input/consumer_data.csv` | CNMC | Quarterly market share data at the market level | Yes |
 | `build/input/traditional_retailers_list.csv` | Own elaboration | Used to relate each retailer to its corresponding group | Yes |
-| `analysis/input/flow_data.csv` | CNMC | Quarterly registrations, dropouts and switchings of consumers | Yes |
-| `build/input/monthly_prices.csv`| CNMC | Monthly retail electricity prices | Yes |
-| `build/input/smart_meter.csv`| CNMC | Quarterly share of supply points with smart meters | Yes |
+| `build/input/flow_data.csv` | CNMC | Quarterly registrations, dropouts and switchings of consumers | Yes |
+| `build/input/smart_meter.csv`| CNMC | Quarterly share of supply points with smart meters at the market level| Yes |
 
 
 Computational requirements
@@ -67,8 +64,7 @@ Computational requirements
   - `CSV` v0.9.11
   - `DataFrames` v0.22.7
   - `StringEncodings` v0.3.5
-  - `TimeZones` v1.7.1
-  - `StatFiles` v0.8.0
+  - `Dates` v1.7.1
   - `ShiftedArrays` v1.0.0
   - `Plots` v1.23.6
   - `FixedEffectModels` v1.6.3
@@ -78,9 +74,9 @@ Computational requirements
   - `Ipopt` v0.7.0
   - `DataStructures` v0.18.11
   - `Printf`
-  - the program "`0_setup.jl`" will install all dependencies. It should be run once.
+  - `Plots`
+- The code "`0_setup.jl`" will install all dependencies. It should be run once.
 
-The main file to run all the code uses the Windows Command Prompt, which may require Windows 10 or higher.
 
 ### Controlled Randomness
 
@@ -109,16 +105,16 @@ The code was last run on a **11th Gen Intel(R) Core(TM) i5-1135G with Windows 10
 Description of programs/code
 ----------------------------
 
-- The program `0_setup.jl` installs all required dependencies in Julia.
-- The program `build/code/1_create_data_sets.jl` computes the market shares based on the number of supply points in each market and tariff, and combines market shares with retail electricity prices and smart meter data.
-- The program `analysis/code/2_analysis.jl` compute the calibration and regression in table 1 and 2b. 
-- The program `analysis/code/3_plots.jl` will generate the figures 1a, 1b and 2a.
+- The code `0_setup.jl` installs all required dependencies in Julia.
+- The code `build/code/1_create_data_sets.jl` computes the market shares based on the number of supply points in each market and tariff, and combines market shares with smart meter data.
+- The code `analysis/code/2_analysis.jl` computes the calibration and regression in table 1 and 2b. 
+- The code `analysis/code/3_plots.jl` will generate the figures 1a and 2a.
 
 Instructions to Replicators
 ---------------------------
 
 - Run `0_setup.jl` once to install the required packages. 
-- For Windows (MacOS) users, run `main_windows.bat` (`main_macOS.sh`) to generate all the outputs sequencially. To run Julia from the command line, add Julia to the PATH environment variable. See https://julialang.org/downloads/platform. 
+- Run `main_windows.bat` (for Windows users) or `main_macOS.sh` (for MAC OS users) to generate all the outputs sequencially. To run Julia from the command line, add Julia to the PATH environment variable. See https://julialang.org/downloads/platform. 
 
 List of tables and programs
 ---------------------------
@@ -126,8 +122,8 @@ List of tables and programs
 The provided code reproduces:
 
 - [ ] All numbers provided in text in the paper
-- [X] All tables and figures in the paper
-- [ ] Selected tables and figures in the paper, as explained and justified below.
+- [ ] All tables and figures in the paper
+- [x] Selected tables and figures in the paper, as explained and justified below.
 
 
 | Figure/Table #    | Program                         | Line Number | Output file                      |
@@ -135,5 +131,4 @@ The provided code reproduces:
 | Table 1           | analysis/code/2_analysis.jl     | 324         | table_1.tex                      |
 | Table 2b          | analysis/code/2_analysis.jl     | 382         | figure_2b.tex                    |
 | Figure 1a         | analysis/code/3_plots.jl        | 42          | figure_1a.png                    |  
-| Figure 1b         | analysis/code/3_plots.jl        | 155         | figure_1b.png                    |
 | Figure 2a         | analysis/code/3_plots.jl        | 180         | figure_2a.png                    | 

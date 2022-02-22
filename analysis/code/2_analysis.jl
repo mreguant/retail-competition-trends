@@ -121,13 +121,6 @@ function solve_model(df::DataFrame,spec::String)
     smartm    = transpose(reshape(convert(Array, df.smartmeter),(T,M))); 
     weight     = transpose(reshape(convert(Array, df.consumer_market/10000.0),(T,M))); 
 
-    price = [transpose(reshape(convert(Array, df.price_EDP*100),(T,M))),
-    transpose(reshape(convert(Array, df.price_ENDESA*100),(T,M))),
-    transpose(reshape(convert(Array, df.price_IBERDROLA*100),(T,M))),
-    transpose(reshape(convert(Array, df.price_NATURGY*100),(T,M))),
-    transpose(reshape(convert(Array, df.price_REPSOL*100),(T,M))),
-    transpose(reshape(convert(Array, df.price_reg*100),(T,M)))];                
-
     model = Model(optimizer_with_attributes(Ipopt.Optimizer, "print_level"=> 2, "nlp_scaling_method" => "gradient-based"));
 
     # Structural variables to construct objects
@@ -165,9 +158,6 @@ function solve_model(df::DataFrame,spec::String)
     @variable(model, smartL);
     @variable(model, smartP); 
     @variable(model, smartPinc); 
-    # Prices
-    @variable(model, priceL);
-    @variable(model, priceP);
     # fixed effects
     @variable(model, deltaL[1:M,1:T]);
     @variable(model, deltaP[1:M,1:T]);
@@ -207,29 +197,29 @@ function solve_model(df::DataFrame,spec::String)
         @constraint(model, [m=1:M, t=1:T, j=1:J], V[m,t,j] == 
                             regMat[j]*regP + incMat[m,j]*incP + alphaP);    
     end
-    if spec=="prices" 
+    if spec=="fe" 
         @constraint(model, [m=1:M, t=1:T, j=1:J], W[m,t,j] ==             
                             timeL[t] + marketL[m] + regMat[j]*regL + incMat[m,j]*incL);
         @constraint(model, [m=1:M, t=1:T], Wo[m,t] ==betaL[quarter[m,t]]+ timeL[t] + marketL[m]);     
         @constraint(model, [m=1:M, t=1:T, j=1:J], V[m,t,j] == 
-                            marketP[m] + timeP[m] + regMat[j]*regP + incMat[m,j]*incP + priceP*price[j][m,t]);
+                            marketP[m] + timeP[m] + regMat[j]*regP + incMat[m,j]*incP);
     end
-    if spec=="smart_prices" 
+    if spec=="smart" 
         @constraint(model, [m=1:M, t=1:T, j=1:J], W[m,t,j] ==  
         timeL[t] + marketL[m] + regMat[j]*regL + incMat[m,j]*incL +  smartL*smartm[m,t]);
         @constraint(model, [m=1:M, t=1:T], Wo[m,t] == 
         timeL[t] + marketL[m] +  smartL*smartm[m,t]);     
         @constraint(model, [m=1:M, t=1:T, j=1:J], V[m,t,j] == 
         timeP[t] + marketP[m] + regMat[j]*regP + incMat[m,j]*incP + smartP*smartm[m,t] 
-        + smartPinc*incMat[m,j]*smartm[m,t] +  priceP*price[j][m,t]);
+        + smartPinc*incMat[m,j]*smartm[m,t]);
     end
-    if spec=="overkill" 
+    if spec=="feInt" 
         @constraint(model, [m=1:M, t=1:T, j=1:J], W[m,t,j] ==  #betaL[quarter[m,t]] 
         deltaL[m,t]  + regMat[j]*regL + incMat[m,j]*incL);
         @constraint(model, [m=1:M, t=1:T], Wo[m,t] == #betaL[quarter[m,t]] 
         deltaL[m,t]);     
         @constraint(model, [m=1:M, t=1:T, j=1:J], V[m,t,j] == 
-        deltaP[m,t] + regMat[j]*regP + incMat[m,j]*incP + smartPinc*incMat[m,j]*smartm[m,t] + priceP*price[j][m,t]);
+        deltaP[m,t] + regMat[j]*regP + incMat[m,j]*incP + smartPinc*incMat[m,j]*smartm[m,t]);
     end
 
     # Definitions for Number of Switchers and New Customers
@@ -262,7 +252,6 @@ function solve_model(df::DataFrame,spec::String)
             JuMP.value.(regP),
             JuMP.value.(smartP),
             JuMP.value.(smartPinc),
-            JuMP.value.(priceP),
             mean(JuMP.value.(Lambda)), 
             mean([mean(JuMP.value.(P)[i,:,J]) for i=1:M]),
             mean([mean(JuMP.value.(P)[i,:,i]) for i=1:M]),
@@ -271,22 +260,21 @@ end
 
 spec = [Vector{Float64}(undef,1) for _ in 1:4];
 spec[1] = solve_model(df,"baseline");
-spec[2] = solve_model(df,"prices");
-spec[3] = solve_model(df,"smart_prices");
-spec[4] = solve_model(df,"overkill");
+spec[2] = solve_model(df,"fe");
+spec[3] = solve_model(df,"smart");
+spec[4] = solve_model(df,"feInt");
 
 titles = OrderedDict(2=>"Incumbent (\$\\beta^i\$) ",
             3=>"Regulated (\$\\beta^r\$) ",
             4=>"Smart meter ",
-            10=>"\$\\overline{\\lambda}\$ ",
+            9=>"\$\\overline{\\lambda}\$ ",
             5=>"Incumbent (\$\\theta^i\$) ",
             6=>"Regulated (\$\\theta^r\$) ",
             7=>"Smart meter ",
             8=>"Smart meter * Inc ",
-            9=>"Price ",
-            12=>"\$\\overline{P}\$ Incumbent ",
-            11=>"\$\\overline{P}\$  Regulated ",
-            13=>"\$\\overline{P}\$  Fringe ");
+            11=>"\$\\overline{P}\$ Incumbent ",
+            10=>"\$\\overline{P}\$  Regulated ",
+            12=>"\$\\overline{P}\$  Fringe ");
 
 
 
@@ -302,14 +290,12 @@ for (key,title) in titles
 end
 
 
-# Save as txt output
+# Create header and footer for latex table
 header = s"""\begin{tabular}{@{\extracolsep{15pt}}lcccc}
             \toprule\n& (1) &(2) & (3)  & (4) \\
             \midrule
             \multicolumn{5}{c}{\textbf{Panel A: Search}} \\[1ex]"""
             
-
-
 footer = s"""\midrule
                 Market, Date & No & Yes & Yes & Yes\\
                 Market X Date & No & No & No & Yes \\
@@ -324,7 +310,7 @@ footer = s"""\midrule
 open("analysis/output/table_1.tex","a") do io
     println(io,header)
     for (key,title) in titles
-        if key in [10,12]
+        if key in [9,11]
             println(io,s"\midrule")
         elseif key == 5
             println(io,s"\midrule \multicolumn{5}{c}{\textbf{Panel B: Incumbency Advantage}} \\[1ex]")

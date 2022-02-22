@@ -69,13 +69,7 @@ df.quarter=parse.(Int64,SubString.(df.date,7,7))
 df=combine(groupby(df, [:date,:year,:quarter,:market,:group,:tariff,:tou,:regulated,:incumbent,]),:consumer.=> sum .=> :consumer)
 
 
-
-
-
-# 2. Adding Prices and Smart Meter Data
-#_________________________________________________________________________________________________________________________________________________________________________________
-
-# 2.1 Smart meter 
+# Adding Smart Meter Data
 meter = CSV.read("build/input/smart_meter.csv", DataFrame)
 meter.date=replace.(meter.date,"_T" => " Q")
 df = leftjoin(df,meter, on = [:market, :date])
@@ -99,91 +93,26 @@ println("The file smart_meter_regression_dataset.csv has been successfully creat
 
 
 
-# 2.2 Prices 
-# Convert monthly prices to quarterly 
-monthly_prices = CSV.read("build/input/monthly_prices.csv",DataFrame)
-
-mp_trad = monthly_prices[monthly_prices.retailer_type .== "traditional",:]
-mp_reg = monthly_prices[monthly_prices.retailer_type .== "regulated",:]
-
-regulated = copy(mp_reg)
-
-for i in unique(mp_trad.retailer)
-    r = copy(mp_reg);
-    r.retailer .= i
-    global regulated = [regulated;r] 
-end 
-
-filter!(row -> row.retailer!="COR", regulated)
-
-monthly_prices = [regulated; mp_trad]
 
 
-monthly_prices.quarter = ifelse.(
-    monthly_prices.month.<4,1,ifelse.(
-        monthly_prices.month.<7,2,ifelse.(
-            monthly_prices.month.<10,3,4)))
-
-
-prices = combine(groupby(monthly_prices,[:year, :quarter,:retailer, :tariff, :retailer_type, :power]), :energy_price  => mean => :price)
-
-
-# Incorporate prices into consumer_data.csv dataset
-prices[:,"regulated"] = ifelse.(prices.retailer_type .== "regulated",1, 0)
-replace!(df.tariff,"2.0NA-DHA" =>"2.0DHA")
-df = leftjoin(df,prices, on = [:year, :quarter, :regulated, :tariff, :group => :retailer])
-sort!(df,[:market,:group,:date,:regulated])
-select!(df,Not([:retailer_type, :power]))
-
-
-
-
-
-
-
-
-
-
-
-
-
-# 3. Aggregate at Group Level 
+# 2. Aggregate at Group Level 
 #_________________________________________________________________________________________________________________________________________________________________________________
 
-df1 = deepcopy(df)
+# Aggregate at group level and compute total consumers by market 
+df1 = combine(groupby(df, [:date,:year,:quarter,:market, :group,:regulated,:incumbent,:smartmeter]), :consumer => sum => :consumer)
+transform!(groupby(df1, [:date, :market]), :consumer => sum => :consumer_market)
 
-# Computing average price from those tariffs we observe them
-df1.price_mis = copy(df1.price)
-replace!(df1.price_mis, missing => 0)
-df1.cons_price_mis = ifelse.(df1.price_mis.==0,0,df1.consumer)
 
-df1_agg = combine(groupby(df1, [:date,:year,:quarter,:market,:group,:regulated,:incumbent,:smartmeter]),
-        [:cons_price_mis,:price_mis] => ((cm, p) ->
-        (sum( p .* cm ) / sum(cm))) 
-        => :price
-)
+# Incumbent and regulated
+df_inc = filter(row -> (row.incumbent ==1),df1)
+df_inc = unstack(df_inc, [:date,:year,:quarter,:market], :regulated, :consumer, renamecols = x -> Symbol("consumer_", x))
+rename!(df_inc, :consumer_true => :consumer_reg,:consumer_false => :consumer_inc)
 
-df1_agg.price = ifelse.(isnan.(df1_agg.price), missing, df1_agg.price)
+# Commercial 
+df_com = filter(row ->row.regulated ==0, df1)
+transform!(groupby(df_com, [:date, :market]), :consumer => sum => :consumer_commercial)
+df_com = unstack(df_com, [:date,:year,:quarter,:market,:smartmeter,:consumer_market, :consumer_commercial], :group, :consumer, renamecols = x -> Symbol("consumer_", x))
 
-# Recover consumers (aggregated)
-col_consumer = combine(groupby(df1, [:date,:year,:quarter,:market, :group,:regulated,:incumbent,:smartmeter]), :consumer => sum => :consumer)
-df1_agg.consumer = col_consumer.consumer
-
-# Compute totals 
-transform!(groupby(df1_agg, [:date, :market]), :consumer => sum => :consumer_market)
-transform!(groupby(df1_agg, [:date, :market,:regulated]), :consumer => sum => :consumer_commercial)
-
-# Incumbent 
-df_inc = filter(row -> (row.incumbent ==1),df1_agg)
-df_inc_cons = unstack(df_inc, [:date,:year,:quarter,:market], :regulated, :consumer, renamecols = x -> Symbol("consumer_", x))
-df_inc_price = unstack(df_inc, [:date,:year,:quarter,:market], :regulated, :price, renamecols = x -> Symbol("price_", x))
-df_inc = leftjoin(df_inc_cons,df_inc_price,on=[:date,:year,:quarter,:market])
-
-# Commercial (not incumbent )
-df_com = filter(row ->row.regulated ==0, df1_agg)
-df_com_cons = unstack(df_com, [:date,:year,:quarter,:market,:smartmeter,:consumer_commercial,:consumer_market], :group, :consumer, renamecols = x -> Symbol("consumer_", x))
-df_com_price = unstack(df_com, [:date,:year,:quarter,:market], :group, :price, renamecols = x -> Symbol("price_", x))
-df_com = leftjoin(df_com_cons,df_com_price,on=[:date,:year,:quarter,:market])
 
 # Merge
 df_wide = leftjoin(df_inc,df_com,on=[:date,:year,:quarter,:market])
@@ -191,23 +120,23 @@ df_wide = leftjoin(df_inc,df_com,on=[:date,:year,:quarter,:market])
 
 
 
-# 4. Merge with Flow Data
+
+
+# 3. Merge with Flow Data
 #_________________________________________________________________________________________________________________________________________________________________________________
 
 df2 = CSV.read("build/input/flow_data.csv",DataFrame, missingstring="NA")
+df2 = filter(row -> row.group!="OTROS" , df2) 
 rename!(df2,:group => :market,:consumer_reg => :consumer_reg_fdata)
 select!(df2,:date,:market,:year,:quarter,:consumer_reg_fdata,:registration_distr_reg,:switch_reg_com => :switch_reg_inc,:switch_reg_others,:switch_com_reg=>:switch_inc_reg,:switch_others_reg)
-df2 = filter(row -> row.consumer_reg_fdata > 0 , df2) 
-
 
 # Merge 
 dfinal = innerjoin(df_wide,df2,on=[:date,:year,:quarter,:market])
-rename!(dfinal,:consumer_false => :consumer_inc,:consumer_true => :consumer_reg,:price_false => :price_inc,:price_true => :price_reg)
 
 
-# Correct registration's size
+# Adjust registrations and flows sizes
 cols_flow = select(dfinal,:registration_distr_reg,:switch_reg_inc,:switch_reg_others,:switch_inc_reg,:switch_others_reg) ./ dfinal.consumer_reg_fdata .*dfinal.consumer_reg
-select!(dfinal,Not([:price_OTHERS,:registration_distr_reg,:switch_reg_inc,:switch_reg_others,:switch_inc_reg,:switch_others_reg]))
+select!(dfinal,Not([:registration_distr_reg,:switch_reg_inc,:switch_reg_others,:switch_inc_reg,:switch_others_reg]))
 dfinal = [dfinal cols_flow] 
 
 
