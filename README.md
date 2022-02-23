@@ -100,7 +100,7 @@ Description of programs/code
 
 - The code `0_setup.jl` installs all required dependencies in Julia.
 - The code `build/code/1_create_data_sets.jl` generates the data sets for the choice search model and the regressions.
-- The code `analysis/code/2_analysis.jl` computes the calibration in table 1 and the regressions in table 2b. 
+- The code `analysis/code/2_analysis.jl` computes the calibrations in table 1 and the regressions in table 2b. 
 - The code `analysis/code/3_plots.jl` generates the figures 1a and 2a.
 
 Instructions to Replicators
@@ -120,7 +120,7 @@ The provided code reproduces:
 
 | Figure/Table #    | Program                         | Line Number | Output file                      |
 |-------------------|---------------------------------|-------------|----------------------------------|
-| Table 1           | analysis/code/2_analysis.jl     | 310         | table_1.tex                      |
-| Table 2b          | analysis/code/2_analysis.jl     | 367         | figure_2b.tex                    |
-| Figure 1a         | analysis/code/3_plots.jl        | 108         | figure_1a.png                    |  
-| Figure 2a         | analysis/code/3_plots.jl        | 173         | figure_2a.png                    | 
+| Table 1           | analysis/code/2_analysis.jl     | 307         | table_1.tex                      |
+| Table 2b          | analysis/code/2_analysis.jl     | 364         | figure_2b.tex                    |
+| Figure 1a         | analysis/code/3_plots.jl        | 109         | figure_1a.png                    |  
+| Figure 2a         | analysis/code/3_plots.jl        | 174         | figure_2a.png                    | 
