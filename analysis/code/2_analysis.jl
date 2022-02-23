@@ -128,7 +128,6 @@ function solve_model(df::DataFrame,spec::String)
     @variable(model, Lambdao[1:M,1:T]);
     @variable(model, W[1:M,1:T,1:J]);
     @variable(model, Wo[1:M,1:T]);
-
     @variable(model, P[1:M,1:T,1:J]);
     @variable(model, Po[1:M,1:T]);  # probability of choosing others (1-sum(P))
     @variable(model, V[1:M,1:T,1:J]);
@@ -213,7 +212,7 @@ function solve_model(df::DataFrame,spec::String)
         timeP[t] + marketP[m] + regMat[j]*regP + incMat[m,j]*incP + smartP*smartm[m,t] 
         + smartPinc*incMat[m,j]*smartm[m,t]);
     end
-    if spec=="feInt" 
+    if spec=="feInt"  # date and market fixed effects interacted
         @constraint(model, [m=1:M, t=1:T, j=1:J], W[m,t,j] ==  #betaL[quarter[m,t]] 
         deltaL[m,t]  + regMat[j]*regL + incMat[m,j]*incL);
         @constraint(model, [m=1:M, t=1:T], Wo[m,t] == #betaL[quarter[m,t]] 

@@ -99,7 +99,7 @@ println("The file smart_meter_regression_dataset.csv has been successfully creat
 #_________________________________________________________________________________________________________________________________________________________________________________
 
 # Aggregate at group level and compute total consumers by market 
-df1 = combine(groupby(df, [:date,:year,:quarter,:market, :group,:regulated,:incumbent,:smartmeter]), :consumer => sum => :consumer)
+df1 = combine(groupby(df, [:date,:year,:quarter,:market,:group,:regulated,:incumbent,:smartmeter]), :consumer => sum => :consumer)
 transform!(groupby(df1, [:date, :market]), :consumer => sum => :consumer_market)
 
 
@@ -109,7 +109,7 @@ df_inc = unstack(df_inc, [:date,:year,:quarter,:market], :regulated, :consumer, 
 rename!(df_inc, :consumer_true => :consumer_reg,:consumer_false => :consumer_inc)
 
 # Commercial 
-df_com = filter(row ->row.regulated ==0, df1)
+df_com = filter(row -> row.regulated ==0, df1)
 transform!(groupby(df_com, [:date, :market]), :consumer => sum => :consumer_commercial)
 df_com = unstack(df_com, [:date,:year,:quarter,:market,:smartmeter,:consumer_market, :consumer_commercial], :group, :consumer, renamecols = x -> Symbol("consumer_", x))
 
