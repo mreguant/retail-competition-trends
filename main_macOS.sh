@@ -24,7 +24,6 @@ echo
 echo "====================================================================="
 echo "Required packages are being installed."
 julia 0_setup.jl
-echo "Required packages have been successfully installed"
 
 echo 
 echo "====================================================================="

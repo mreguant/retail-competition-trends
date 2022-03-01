@@ -22,7 +22,6 @@ ECHO =
 ECHO =====================================================================
 ECHO Required packages are being installed.
 JULIA 0_setup.jl
-ECHO Required packages have been successfully installed
 
 ECHO =
 ECHO =====================================================================
