@@ -21,11 +21,12 @@ using Printf
 # Set working directory
 cd(dirname(dirname(@__DIR__)))
 
-try
-    mkdir("analysis/output")
-catch
-    nothing    
+# Create folder
+if isdir("analysis/input")
+    rm("analysis/input", recursive=true)
 end
+
+mkdir("analysis/input")
 
 
 

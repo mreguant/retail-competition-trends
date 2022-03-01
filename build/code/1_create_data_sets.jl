@@ -18,6 +18,12 @@ using ShiftedArrays
 cd(dirname(dirname(@__DIR__)))
 
 
+# Create folder
+if isdir("analysis/input")
+    rm("analysis/input", recursive=true)
+end
+
+mkdir("analysis/input")
 
 
 # 1. Preparing consumer_data.csv
@@ -78,11 +84,6 @@ dropmissing!(df,:smartmeter)
 
 # Write the file
 ##################################################################################################################################################################################
-try
-    mkdir("analysis/input")
-catch
-    nothing
-end
 CSV.write("analysis/input/smart_meter_regression_dataset.csv", df)
 
 
