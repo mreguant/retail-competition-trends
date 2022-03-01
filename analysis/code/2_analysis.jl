@@ -22,11 +22,11 @@ using Printf
 cd(dirname(dirname(@__DIR__)))
 
 # Create folder
-if isdir("analysis/input")
-    rm("analysis/input", recursive=true)
+if isdir("analysis/output")
+    rm("analysis/output", recursive=true)
 end
 
-mkdir("analysis/input")
+mkdir("analysis/output")
 
 
 
