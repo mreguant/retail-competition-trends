@@ -120,7 +120,7 @@ The provided code reproduces:
 
 | Figure/Table #    | Program                         | Line Number | Output file                      |
 |-------------------|---------------------------------|-------------|----------------------------------|
-| Table 1           | analysis/code/2_analysis.jl     | 307         | table_1.tex                      |
-| Table 2b          | analysis/code/2_analysis.jl     | 364         | figure_2b.tex                    |
-| Figure 1a         | analysis/code/3_plots.jl        | 109         | figure_1a.png                    |  
-| Figure 2a         | analysis/code/3_plots.jl        | 174         | figure_2a.png                    | 
+| Table 1           | analysis/code/2_analysis.jl     | 310         | table_1.tex                      |
+| Table 2b          | analysis/code/2_analysis.jl     | 368         | figure_2b.tex                    |
+| Figure 1a         | analysis/code/3_plots.jl        | 123         | figure_1a.png                    |  
+| Figure 2a         | analysis/code/3_plots.jl        | 181         | figure_2a.png                    | 
